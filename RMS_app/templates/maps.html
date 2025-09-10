@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block body %}
+<style>
+  /* ---------- Theme Variables ---------- */
+  :root {
+    --bg-main: #f8f9fa;
+    --text-main: #212529;
+    --card-bg: #ffffff;
+    --card-text: #212529;
+    --shadow-color: rgba(0,0,0,0.1);
+  }
+
+  body.dark-mode {
+    --bg-main: #101c2c;
+    --text-main: #d5d9e4;
+    --card-bg: #141f34;
+    --card-text: #f0f2f8;
+    --shadow-color: rgba(0,0,0,0.5);
+  }
+
+  /* ---------- Main Content ---------- */
+  .main-content {
+    margin-top: 56px;       /* header height */
+    margin-left: 72px;      /* collapsed sidebar width */
+    padding: 24px;
+    width: calc(100% - 72px);
+    background: var(--bg-main);
+    color: var(--text-main);
+    transition: background 0.3s, color 0.3s, margin-left 0.3s, width 0.3s;
+  }
+
+  /* Adjust when sidebar is expanded */
+  .sidebar:hover ~ .main-content {
+    margin-left: 220px;
+    width: calc(100% - 220px);
+  }
+
+  /* ---------- Card ---------- */
+  .card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 0.25rem 0.5rem var(--shadow-color);
+    margin-bottom: 24px;
+    transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+  }
+
+  .card-body {
+    padding: 20px;
+    color: var(--card-text);
+  }
+
+  h2, h5 {
+    color: var(--text-main);
+    transition: color 0.3s;
+  }
+
+  p {
+    color: var(--text-main);
+    transition: color 0.3s;
+  }
+
+  /* ---------- Responsive Map ---------- */
+  .ratio-16x7 {
+    position: relative;
+    width: 100%;
+    padding-bottom: 43.75%; /* 7 / 16 */
+    height: 0;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+
+  .ratio-16x7 iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  /* ---------- Theme Toggle Button ---------- */
+  .theme-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    background: #06d6a0;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    z-index: 1000;
+  }
+</style>
+
+<!-- Theme Toggle -->
+<button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+
+<main class="main-content">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title">Site Locations</h5>
+      <p class="card-text">Below is the map displaying your site locations.</p>
+      <!-- Responsive Google Maps Embed -->
+      <div class="ratio-16x7">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14699.29616134627!2d77.4080552!3d23.2599337!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x397c4331d8dfe84b%3A0x88aabca5c39e4d47!2sBhopal%2C%20Madhya%20Pradesh!5e0!3m2!1sen!2sin!4v1699999999999!5m2!1sen!2sin"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          aria-hidden="false"
+          tabindex="0"
+        ></iframe>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  // Theme toggle
+  function toggleTheme() {
+    document.body.classList.toggle('dark-mode');
+  }
+
+  // Highlight active sidebar link
+  document.addEventListener("DOMContentLoaded", function () {
+    const links = document.querySelectorAll(".sidebar .nav-link");
+    let currentPath = window.location.pathname;
+
+    if (currentPath.length > 1 && currentPath.endsWith("/")) {
+      currentPath = currentPath.slice(0, -1);
+    }
+
+    links.forEach((link) => {
+      let linkPath = link.getAttribute("href");
+      if (linkPath.length > 1 && linkPath.endsWith("/")) {
+        linkPath = linkPath.slice(0, -1);
+      }
+      if (currentPath === linkPath || currentPath.startsWith(linkPath + "/")) {
+        link.classList.add("active");
+      } else {
+        link.classList.remove("active");
+      }
+    });
+  });
+</script>
+{% endblock body %}

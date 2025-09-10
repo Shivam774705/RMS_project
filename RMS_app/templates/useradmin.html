@@ -1,0 +1,99 @@
+{% extends "base.html" %} {% block body %}
+<style>
+  .main-content {
+    margin-top: 56px;
+    margin-left: 220px;
+    padding: 24px;
+    min-height: 100vh;
+    background: #f8f9fa;
+    color: #212529;
+  }
+  .card {
+    background: #ffffff;
+    padding: 20px;
+    margin-bottom: 16px;
+    border-radius: 12px;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    color: #212529;
+  }
+  h2,
+  h5 {
+    color: #343a40;
+  }
+  p {
+    color: #495057;
+  }
+  form {
+    margin-top: 15px;
+  }
+  label {
+    font-weight: 600;
+  }
+  input,
+  select {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 12px;
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+  }
+  button {
+    background-color: #118ab2;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+</style>
+
+<main class="main-content container-fluid">
+  <h2 class="mb-4">Admin Panel</h2>
+  <p>Manage users, system settings, and permissions.</p>
+
+  <div class="card">
+    <h5>User Management</h5>
+    <form method="POST" onsubmit="return validateForm()">
+  {% csrf_token %}
+  
+  <label for="name">Name</label>
+  <input id="name" name="name" type="text" placeholder="Enter name" required />
+
+  <label for="username">Username</label>
+  <input id="username" name="username" type="text" placeholder="Enter username" required />
+
+  <label for="password">Password</label>
+  <input id="password" name="password" type="password" placeholder="Enter password" required />
+
+  <label for="confirm-password">Confirm Password</label>
+  <input id="confirm-password" name="confirm_password" type="password" placeholder="Confirm password" required />
+
+  <label for="role">Role</label>
+  <select id="role" name="role" required>
+    <option value="" selected disabled>Select</option>
+    <option value="SOC operator">SOC operator</option>
+    <option value="Circle Manager">Circle Manager</option>
+    <option value="Technician">Technician</option>
+    <option value="Management">Management</option>
+  </select>
+
+  <button type="submit">Add User</button>
+</form>
+
+<script>
+function validateForm() {
+  const password = document.getElementById("password").value;
+  const confirmPassword = document.getElementById("confirm-password").value;
+
+  if (password !== confirmPassword) {
+    alert("Passwords do not match!");
+    return false; // stop form submission
+  }
+  return true; // allow form submission
+}
+</script>
+
+
+  </div>
+</main>
+{% endblock body %}

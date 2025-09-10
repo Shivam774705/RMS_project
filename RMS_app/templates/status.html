@@ -1,0 +1,409 @@
+{% extends "base.html" %} {% block div_class %}no-sidebar{% endblock %} 
+{% block body %}
+
+<style>
+  /* ==========================================================
+   === STYLING FOR SITE STATUS PAGE (MATCHING ALARMS THEME) ===
+   ========================================================== */
+
+  /* === Theme Variables (Light & Dark Mode) === */
+  :root {
+    --background-light: #eef3f7;
+    --background-dark: #0f172a; /* Solid dark blue from alarms page */
+    --card-light: #fff;
+    --card-dark: #1e293b; /* Darker card color from alarms page */
+    --card-text-light: #233344;
+    --card-text-dark: #cbd5e1; /* Lighter text for dark mode */
+    --card-border-light: #e4e8ef;
+    --card-border-dark: #334155; /* Darker border */
+    --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-dark: 0 1px 2px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Hide sidebar when no-sidebar class present */
+  div.no-sidebar .sidebar {
+    display: none !important;
+  }
+  div.no-sidebar .main-content {
+    margin-left: 0 !important;
+  }
+  a{
+    display: inline-flex;
+    align-items: center;
+    background-color: transparent;
+    color: #141f34;
+    margin-top:1rem;
+    margin-bottom: 1rem;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .dark-mode a {
+    color: #fff;
+  }
+
+  /* === Main Content & Body Styles === */
+  .main-content {
+    transition: margin-left 0.3s, width 0.3s;
+  }
+
+  body.dark-mode {
+    background-color: var(--background-dark);
+    color: var(--card-text-dark);
+  }
+  body.dark-mode h4,
+  body.dark-mode .filter-label {
+    color: #e2e8f0; /* Bright white for titles in dark mode */
+  }
+
+  /* === Filter Bar & Inputs (Alarms Theme) === */
+  .filter-bar {
+    background: var(--card-light);
+    border: 1px solid var(--card-border-light);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-light);
+  }
+  body.dark-mode .filter-bar {
+    background: var(--card-dark);
+    border-color: var(--card-border-dark);
+    box-shadow: var(--shadow-dark);
+  }
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 150px;
+    flex: 1;
+  }
+  .filter-label {
+    font-weight: 500;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    color: #475569;
+  }
+  body.dark-mode .filter-label {
+    color: #94a3b8;
+  }
+  .filter-select,
+  .filter-input {
+    background: #f1f5f9;
+    color: var(--text-light);
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    font-size: 1rem;
+    width: 100%;
+  }
+  body.dark-mode .filter-select,
+  body.dark-mode .filter-input {
+    background: #334155;
+    color: #f1f5f9;
+    border: 1px solid #475569;
+  }
+  .filter-select:focus,
+  .filter-input:focus {
+    outline: 2px solid #3b82f6;
+    border-color: transparent;
+  }
+  .search-button {
+    background-color: #3b82f6;
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    height: 100%;
+    transition: background-color 0.2s;
+  }
+  .search-button:hover {
+    background-color: #2563eb;
+  }
+
+  /* === Table Styles (Alarms Theme) === */
+  .results-table-wrapper {
+    background: var(--card-light);
+    border: 1px solid var(--card-border-light);
+    border-radius: 12px;
+    padding: 0.5rem;
+    box-shadow: var(--shadow-light);
+  }
+  body.dark-mode .results-table-wrapper {
+    background: var(--card-dark);
+    border-color: var(--card-border-dark);
+    box-shadow: var(--shadow-dark);
+  }
+  .results-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  .results-table th,
+  .results-table td {
+    padding: 1rem 1.25rem;
+    text-align: left;
+    border-bottom: 1px solid var(--card-border-light);
+  }
+  body.dark-mode .results-table th,
+  body.dark-mode .results-table td {
+    border-bottom: 1px solid var(--card-border-dark);
+  }
+  .results-table thead th {
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    color: #64748b;
+  }
+  body.dark-mode .results-table thead th {
+    color: #94a3b8;
+  }
+  .results-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  .results-table tbody tr {
+    transition: background-color 0.2s;
+  }
+  .results-table tbody tr:hover {
+    background-color: #f8fafc;
+  }
+  body.dark-mode .results-table tbody tr:hover {
+    background-color: #28354a;
+  }
+  /* === NEW: PAGINATION STYLES === */
+  .pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 0.5rem;
+  }
+  .pagination-info {
+    font-size: 0.875rem;
+    color: #64748b;
+  }
+  body.dark-mode .pagination-info {
+    color: #94a3b8;
+  }
+  .pagination-links a,
+  .pagination-links span {
+    padding: 0.5rem 1rem;
+    margin: 0 0.25rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #334155;
+    background-color: #fff;
+    transition: background-color 0.2s;
+  }
+  body.dark-mode .pagination-links a,
+  body.dark-mode .pagination-links span {
+    border-color: #334155;
+    color: #cbd5e1;
+    background-color: #1e293b;
+  }
+  .pagination-links a:hover {
+    background-color: #f1f5f9;
+  }
+  body.dark-mode .pagination-links a:hover {
+    background-color: #334155;
+  }
+  .pagination-links .current-page {
+    background-color: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+  }
+  .pagination-links .disabled {
+    color: #9ca3af;
+    background-color: #f3f4f6;
+    cursor: not-allowed;
+  }
+  body.dark-mode .pagination-links .disabled {
+    color: #4b5563;
+    background-color: #374151;
+  }
+
+  /* === NEW: RESPONSIVE STYLES === */
+  @media (max-width: 768px) {
+    .main-content {
+      padding: 1rem;
+    }
+    .filter-bar {
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1rem;
+    }
+    .results-table th,
+    .results-table td {
+      padding: 0.75rem;
+    }
+    .pagination-controls {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+</style>
+
+<main class="main-content">
+  <div class="container-fluid">
+    <!--<h4 class="mb-4">Site Status Search</h4>-->
+
+    <!--<form action="{% url 'status' %}" method="get" class="filter-bar">-->
+    <!--     <div class="row w-100 g-3">-->
+    <!--        <div class="col-12 col-sm-6 col-lg-2">-->
+    <!--            <div class="filter-group">-->
+    <!--                <label for="zone" class="filter-label">Zone</label>-->
+    <!--                <select class="filter-select" name="zone" id="zone">-->
+    <!--                    <option value="">All</option>-->
+    <!--                    {% for z in zones %}<option value="{{ z.zone }}" {% if z.zone == current_zone %}selected{% endif %}>{{ z.zone }}</option>{% endfor %}-->
+    <!--                </select>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--        <div class="col-12 col-sm-6 col-lg-2">-->
+    <!--            <div class="filter-group">-->
+    <!--                <label for="cluster" class="filter-label">Cluster</label>-->
+    <!--                <select class="filter-select" name="cluster" id="cluster">-->
+    <!--                    <option value="">All</option>-->
+    <!--                    {% for c in clusters %}<option value="{{ c.cluster }}" {% if c.cluster == current_cluster %}selected{% endif %}>{{ c.cluster }}</option>{% endfor %}-->
+    <!--                </select>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--        <div class="col-12 col-sm-6 col-lg-2">-->
+    <!--            <div class="filter-group">-->
+    <!--                <label for="site_name" class="filter-label">Site Name</label>-->
+    <!--                <input type="text" class="filter-input" name="site_name" id="site_name" value="{{ site_name }}" placeholder="Enter Site Name">-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--        <div class="col-12 col-sm-6 col-lg-2">-->
+    <!--            <div class="filter-group">-->
+    <!--                <label for="imei" class="filter-label">IMEI No</label>-->
+    <!--                <input type="text" class="filter-input" name="imei" id="imei" value="{{ imei }}" placeholder="Enter IMEI">-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--        <div class="col-12 col-sm-6 col-lg-2">-->
+    <!--            <div class="filter-group">-->
+    <!--                <label for="global_no" class="filter-label">Global No</label>-->
+    <!--                <input type="text" class="filter-input" name="global_no" id="global_no" value="{{ global_no }}" placeholder="Enter Global No">-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--        <div class="col-12 col-sm-6 col-lg-2 d-flex align-items-end">-->
+    <!--            <button type="submit" class="search-button w-100">Search</button>-->
+    <!--        </div>-->
+    <!--    </div>-->
+    <!--</form>-->
+
+        <a href="/index">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="18"
+        height="18"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 18 18"
+        style="vertical-align: middle; margin-right: 7px"
+      >
+        <path
+          d="M12 15l-6-6 6-6"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      Back
+    </a>
+
+    {% include "filters.html" %}
+
+    <div class="results-table-wrapper">
+      <div class="table-responsive">
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>Site ID</th>
+              <th>Site Name</th>
+              <th>Global ID</th>
+              <th>Battery (V)</th>
+              <th>Signal (dBm)</th>
+              <th>Last Communication</th>
+              <th>Aging</th>
+              <th>Active Alarms</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in page_obj %}
+            <tr>
+              <td>{{ item.site_id }}</td>
+              <td>{{ item.site_name }}</td>
+              <td>{{ item.global_id }}</td>
+              {% if item.status_data %}
+              <td>{{ item.status_data.volt }}</td>
+              <td>{{ item.status_data.sig }}</td>
+              <td>{{ item.status_data.update_at|date:"Y-m-d H:i" }}</td>
+              {% else %}
+              <td colspan="3" class="text-center text-muted">
+                No Live Status Data
+              </td>
+              {% endif %}
+              <td>-</td>
+              <td>-</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="8" class="text-center p-5">No results found.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% if page_obj.has_other_pages %}
+      <div class="pagination-controls">
+        <div class="pagination-info">
+          Showing page {{ page_obj.number }} of {{ page_obj.paginator.num_pages
+          }}
+        </div>
+        <div class="pagination-links">
+          {% if page_obj.has_previous %}
+          <a
+            href="?page=1&site_name={{site_name}}&global_no={{global_no}}&imei={{imei}}&zone={{current_zone}}&cluster={{current_cluster}}"
+            >&laquo; First</a
+          >
+          <a
+            href="?page={{ page_obj.previous_page_number }}&site_name={{site_name}}&global_no={{global_no}}&imei={{imei}}&zone={{current_zone}}&cluster={{current_cluster}}"
+            >Previous</a
+          >
+          {% else %}
+          <span class="disabled">&laquo; First</span>
+          <span class="disabled">Previous</span>
+          {% endif %}
+
+          <span class="current-page">{{ page_obj.number }}</span>
+
+          {% if page_obj.has_next %}
+          <a
+            href="?page={{ page_obj.next_page_number }}&site_name={{site_name}}&global_no={{global_no}}&imei={{imei}}&zone={{current_zone}}&cluster={{current_cluster}}"
+            >Next</a
+          >
+          <a
+            href="?page={{ page_obj.paginator.num_pages }}&site_name={{site_name}}&global_no={{global_no}}&imei={{imei}}&zone={{current_zone}}&cluster={{current_cluster}}"
+            >Last &raquo;</a
+          >
+          {% else %}
+          <span class="disabled">Next</span>
+          <span class="disabled">Last &raquo;</span>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</main>
+
+{% endblock body %}

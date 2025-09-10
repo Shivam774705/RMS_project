@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block body %}
+<style>
+  /* Main content area with margin to not get covered */
+  .main-content {
+    margin-top: 56px; /* top-bar height */
+    margin-left: 220px; /* sidebar width */
+    padding-top: 24px;
+    padding-bottom: 56px; /* footer height */
+    min-height: 100vh;
+    overflow-y: auto;
+    background: #f8f9fa; /* Light background */
+    color: #212529; /* Dark text */
+  }
+
+  /* Card styling with light colors */
+  .card {
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff; /* white background */
+    border-radius: 12px;
+    box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
+    color: #212529;
+  }
+
+  /* Chart container with light background */
+  .chart-box {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+    box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
+  }
+
+  /* Headings color */
+  h2, h5 {
+    color: #343a40;
+  }
+
+  /* Paragraph color */
+  p {
+    color: #495057;
+  }
+</style>
+
+<main class="main-content container-fluid p-4">
+  <h2 class="mb-4">NOC Analytics Dashboard</h2>
+  <p>
+    The Network Operations Center (NOC) Analytics dashboard provides real-time insights into the health, performance, and incidents of the network infrastructure. This dashboard helps the NOC team monitor critical metrics, quickly identify issues, and optimize network operations to ensure smooth service delivery.
+  </p>
+
+  <div class="row mb-4">
+    <div class="col-md-3 mb-3"><div class="card text-center">Incident Management</div></div>
+    <div class="col-md-3 mb-3"><div class="card text-center">SLA Compliance</div></div>
+    <div class="col-md-3 mb-3"><div class="card text-center">Network Performance</div></div>
+    <div class="col-md-3 mb-3"><div class="card text-center">MTTA/MTTR</div></div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="chart-box">
+        <h5>Incident Management</h5>
+        <canvas id="incidentChart"></canvas>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="chart-box">
+        <h5>SLA Compliance</h5>
+        <canvas id="slaChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="chart-box">
+        <h5>Network & Device Performance</h5>
+        <canvas id="performanceChart"></canvas>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="chart-box">
+        <h5>Mean Time To Acknowledge/Resolution</h5>
+        <p>
+          Analyze the Mean Time to Acknowledge (MTTA) and Mean Time to Resolution (MTTR) to evaluate incident response effectiveness and identify areas for process improvement.
+        </p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  const ctxIncident = document.getElementById('incidentChart').getContext('2d');
+  new Chart(ctxIncident, {
+    type: 'bar',
+    data: {
+      labels: ['Open', 'Unassigned', 'SLA Breached'],
+      datasets: [{
+        label: 'Incidents',
+        data: [12, 5, 2],
+        backgroundColor: ['#ef476f', '#ffd166', '#06d6a0']  // softer light colors red, yellow, green
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, precision:0 }
+      }
+    }
+  });
+
+  const ctxSLA = document.getElementById('slaChart').getContext('2d');
+  new Chart(ctxSLA, {
+    type: 'doughnut',
+    data: {
+      labels: ['Compliant', 'Violated'],
+      datasets: [{
+        label: 'SLA Status',
+        data: [85, 15],
+        backgroundColor: ['#06d6a0', '#ef476f']
+      }]
+    },
+    options: { responsive: true }
+  });
+
+  const ctxPerformance = document.getElementById('performanceChart').getContext('2d');
+  new Chart(ctxPerformance, {
+    type: 'line',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      datasets: [{
+        label: 'Network Performance',
+        data: [75, 82, 78, 80, 85, 88],
+        borderColor: '#118ab2', // calm blue
+        backgroundColor: 'rgba(17,138,178,0.2)',
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: { responsive: true }
+  });
+</script>
+{% endblock body %}

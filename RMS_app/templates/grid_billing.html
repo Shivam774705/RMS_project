@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block body %}
+<style>
+  /* ---------- Main Content Area ---------- */
+  .main-content {
+    position: relative;
+    z-index: 1;
+    margin-top: 56px;       /* Top navbar height */
+    margin-left: 72px;      /* Collapsed sidebar width */
+    padding: 24px;
+    min-height: 100vh;
+    width: calc(100% - 72px);
+    background: #f8f9fa;    /* Light theme default */
+    color: #212529;
+    transition: background 0.3s, color 0.3s, margin-left 0.3s, width 0.3s;
+  }
+
+  /* Expand margin + width when sidebar hovered */
+  .sidebar:hover ~ .main-content {
+    margin-left: 260px;
+    width: calc(100% - 260px);
+  }
+
+  /* ---------- Card Styling ---------- */
+  .card {
+    background: #ffffff;
+    padding: 20px;
+    margin-bottom: 16px;
+    border-radius: 12px;
+    box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
+    color: #212529;
+    transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+  }
+
+  /* Chart container */
+  .chart-box {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+    box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
+    color: #212529;
+    transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+  }
+
+  /* ---------- Headings & Text ---------- */
+  h2, h5 {
+    color: #343a40;
+    transition: color 0.3s;
+  }
+
+  p {
+    color: #495057;
+    transition: color 0.3s;
+  }
+
+  /* ---------- Dark Mode Overrides ---------- */
+  .dark-mode .main-content {
+    background: #101c2c;
+    color: #d5d9e4;
+  }
+
+  .dark-mode .card {
+    background: #141f34;
+    color: #f0f2f8;
+    box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.5);
+  }
+
+  .dark-mode .chart-box {
+    background: #141f34;
+    color: #f0f2f8;
+    box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.6);
+  }
+
+  .dark-mode h2,
+  .dark-mode h5 {
+    color: #ffffff;
+  }
+
+  .dark-mode p {
+    color: #c7cde3;
+  }
+</style>
+
+<main class="main-content container-fluid">
+  
+  <!-- Grid Billing Section (Full Design) -->
+  <div class="card">
+    <h5 class="mb-3">Grid Billing Summary</h5>
+    <p>Overview of billing history, payments, and outstanding balances.</p>
+
+    <div class="row mb-4">
+      <div class="col-md-3 mb-3"><div class="card text-center">Total Billed</div></div>
+      <div class="col-md-3 mb-3"><div class="card text-center">Payments Received</div></div>
+      <div class="col-md-3 mb-3"><div class="card text-center">Outstanding Balance</div></div>
+      <div class="col-md-3 mb-3"><div class="card text-center">Average Cost/kWh</div></div>
+    </div>
+
+    <div class="chart-box">
+      <h5>Monthly Billing Amount</h5>
+      <canvas id="billingChart"></canvas>
+    </div>
+  </div>
+  <!-- End Grid Billing Section -->
+
+  <div class="card">
+    <h5>System Performance Metrics</h5>
+    <p>Comprehensive view of system uptime, incident logs, and operational metrics.</p>
+  </div>
+</main>
+
+<script>
+  function getChartColors() {
+    const darkMode = document.body.classList.contains("dark-mode");
+    return {
+      text: darkMode ? "#c7cde3" : "#495057",
+      legend: darkMode ? "#f0f2f8" : "#212529"
+    };
+  }
+
+  function renderBillingChart() {
+    const colors = getChartColors();
+    const ctxBilling = document.getElementById('billingChart').getContext('2d');
+
+    return new Chart(ctxBilling, {
+      type: 'bar',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+          label: 'Billing Amount ($)',
+          data: [200, 220, 210, 230, 240, 250],
+          backgroundColor: '#1f77b4'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            labels: {
+              color: colors.legend
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              color: colors.text
+            }
+          },
+          y: {
+            ticks: {
+              color: colors.text
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // Render chart
+  let billingChart = renderBillingChart();
+
+  // Re-render chart when theme toggles
+  const observer = new MutationObserver(() => {
+    billingChart.destroy();
+    billingChart = renderBillingChart();
+  });
+
+  observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+</script>
+{% endblock body %}

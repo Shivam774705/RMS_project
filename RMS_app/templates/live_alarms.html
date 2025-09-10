@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+{% block div_class %}no-sidebar{% endblock %}
+{% block body %}
+<style>
+  :root {
+    --background-light: #eef3f7;
+    --background-dark: linear-gradient(180deg, #141f34 0%, #101c2c 100%);
+    --card-light: #fff;
+    --card-dark: #141f34;
+    --card-text-light: #233344;
+    --card-text-dark: #d5d9e4;
+    --card-border-light: #e4e8ef;
+    --card-border-dark: #364665;
+    --sidebar-width: 270px;
+    --filter-bg-light: #fff;
+    --filter-bg-dark: #1e2a4a;
+    --filter-text-light: #233344;
+    --filter-text-dark: #d5d9e4;
+    --box-shadow-light: 0 2px 8px rgba(22,36,59,0.03);
+    --box-shadow-dark: 0 2px 8px rgba(10,24,48,0.12);
+  }
+  /* Hide sidebar when no-sidebar class present */
+  div.no-sidebar .sidebar {
+    display: none !important;
+  }
+  div.no-sidebar .main-content {
+    margin-left: 0 !important;
+  }
+  /* Add transitions if needed for smooth effect */
+  .main-content {
+    transition: margin-left 0.3s, width 0.3s;
+  }
+  body {
+    transition: background 0.2s;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  }
+  body.dark-mode {
+    background: var(--background-dark);
+    color: var(--card-text-dark);
+  }
+
+  a{
+    display: inline-flex;
+    align-items: center;
+    background-color: transparent;
+    color: #141f34;
+    margin-bottom: 1rem;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .dark-mode a {
+    color: #fff;
+  }
+
+  .alarm-layout {
+    display: flex;
+    min-height: calc(100vh - 56px);
+  }
+
+  /* Sidebar - KPI Section */
+  .alarm-sidebar {
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    background: var(--card-light);
+    border-right: 1px solid var(--card-border-light);
+    padding: 2rem 1.25rem 2rem 1.5rem;
+    color: var(--card-text-light);
+    transition: background 0.2s, color 0.2s;
+  }
+  body.dark-mode .alarm-sidebar {
+    background: transparent;
+    color: var(--card-text-dark);
+    border-right: 1px solid var(--card-border-dark);
+    box-shadow: 2px 0 8px rgba(10,24,48,0.18);
+  }
+  .sidebar-title {
+    font-size: 1.17rem;
+    font-weight: 700;
+    margin-bottom: 1.4rem;
+  }
+  .kpi-entry {
+    font-size: 1.09rem;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+  }
+  .kpi-label {
+    font-weight: 500;
+    margin-right: 0.6em;
+  }
+  .kpi-value {
+    font-weight: 600;
+    font-size: 1.17rem;
+    margin-left: auto;
+  }
+  .kpi-dot {
+    width: 17px; height: 17px;
+    border-radius: 50%;
+    margin-right: 0.47em;
+    display: inline-block;
+  }
+  .dot-critical { background: #ed4040; }
+  .dot-major   { background: #f9a120; }
+  .dot-minor   { background: #ffd600; }
+  .dot-total   { background: #5e7bfd; }
+
+  /* Main Content */
+  .main-content {
+    flex: 1 1 0;
+    padding: 2.2rem 2.8rem;
+    overflow-x: auto;
+    background: transparent;
+    transition: background 0.2s;
+  }
+  /* Alarm Table */
+  .alarm-table {
+    width: 100%;
+    background: var(--card-light);
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid var(--card-border-light);
+    border-radius: 12px;
+    box-shadow: var(--box-shadow-light);
+  }
+  body.dark-mode .alarm-table {
+    background: var(--card-dark);
+    border: 1px solid var(--card-border-dark);
+    box-shadow: var(--box-shadow-dark);
+    color: var(--card-text-dark);
+  }
+  .alarm-table th, .alarm-table td {
+    padding: 12px 16px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--card-border-light);
+  }
+  body.dark-mode .alarm-table th, body.dark-mode .alarm-table td {
+    border-bottom: 1px solid var(--card-border-dark);
+  }
+  .alarm-table thead th {
+    font-weight: 600;
+    text-align: left;
+  }
+  .alarm-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  .alarm-table .dot-critical { background: #ed4040; }
+  .alarm-table .dot-major { background: #f9a120; }
+  .alarm-table .dot-minor { background: #ffd600; }
+  .alarm-table .severity-text { font-weight: 500; }
+</style>
+
+<div class="alarm-layout">
+  <!-- Sidebar: KPIs -->
+  <aside class="alarm-sidebar">    
+    <div class="sidebar-title">
+      Live Alarm Summary
+    </div>
+    <div class="kpi-entry">
+      <span class="kpi-dot dot-total"></span>
+      <span class="kpi-label">Active Alarms</span>
+      <span class="kpi-value">125</span>
+    </div>
+    <div class="kpi-entry">
+      <span class="kpi-dot dot-critical"></span>
+      <span class="kpi-label">Critical Alarms</span>
+      <span class="kpi-value">35</span>
+    </div>
+    <div class="kpi-entry">
+      <span class="kpi-dot dot-major"></span>
+      <span class="kpi-label">Major Alarms</span>
+      <span class="kpi-value">55</span>
+    </div>
+    <div class="kpi-entry">
+      <span class="kpi-dot dot-minor"></span>
+      <span class="kpi-label">Minor Alarms</span>
+      <span class="kpi-value">35</span>
+    </div>
+  </aside>
+
+  <!-- Main Content: Filters + Alarm Table -->
+  <section class="main-content"> 
+    <a href="/index">
+    <svg xmlns="http://www.w3.org/2000/svg" 
+        width="18" height="18" fill="none" stroke="currentColor"
+        viewBox="0 0 18 18" style="vertical-align: middle; margin-right: 7px;">
+        <path d="M12 15l-6-6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Back
+    </a>
+
+    {% include "filters.html" %}   
+    <div style="font-size:1.08rem;font-weight:600;margin-bottom:1.1rem;">Alarm Table (Real-Time Feed)</div>
+    <div class="table-responsive">
+      <table class="alarm-table" id="alarmsTable">
+        <thead>
+          <tr>
+            <th>Site ID</th>
+            <th>Alarm Type</th>
+            <th>Severity</th>
+            <th>Timestamp</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>12456</td>
+            <td>Mains Fail</td>
+            <td><span class="kpi-dot dot-critical"></span><span class="severity-text" style="color:#ed4040;">Critical</span></td>
+            <td>10:31 AM</td>
+            <td>Open</td>
+          </tr>
+          <tr>
+            <td>12457</td>
+            <td>DG Fail</td>
+            <td><span class="kpi-dot dot-major"></span><span class="severity-text" style="color:#f9a120;">Major</span></td>
+            <td>10:29 AM</td>
+            <td>Open</td>
+          </tr>
+          <tr>
+            <td>12458</td>
+            <td>Door Open</td>
+            <td><span class="kpi-dot dot-minor"></span><span class="severity-text" style="color:#ffd600;">Minor</span></td>
+            <td>10:27 AM</td>
+            <td>Acknowledged</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+  document.body.classList.add('no-sidebar');
+</script>
+
+{% endblock body %}

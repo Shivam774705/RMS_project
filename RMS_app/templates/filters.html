@@ -1,0 +1,376 @@
+<style>
+  :root {
+    --background-light: #f6f7fb;
+    --background-dark: linear-gradient(180deg, #141f34 0%, #101c2c 100%);
+    --card-light: #fff;
+    --card-dark: #141f34;
+    --card-text-light: #233344;
+    --card-text-dark: #d5d9e4;
+    --card-border-light: #e4e8ef;
+    --card-border-dark: #364665;
+    --box-shadow-light: 0 2px 8px rgba(22, 36, 59, 0.03);
+    --box-shadow-dark: 0 2px 8px rgba(10, 24, 48, 0.12);
+    --filter-bg-light: #fff;
+    --filter-bg-dark: #1e2a4a;
+    --filter-text-light: #233344;
+    --filter-text-dark: #d5d9e4;
+  }
+  body {
+    background: var(--background-light);
+    padding-top: 56px; /* for top-bar spacing */
+    transition: background 0.3s;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+      Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+      sans-serif;
+  }
+  body.dark-mode {
+    background: var(--background-dark);
+    color: var(--card-text-dark);
+  }
+  .filter-group.alarm-type {
+    display: none !important;
+  }
+  .filter-group.site-type {
+    display: none !important;
+  }
+  .filter-group.global-no {
+    display: none !important;
+  }
+  .filter-group.site-name {
+    display: none !important;
+  }
+  .filter-group.export {
+    display: none !important;
+  }
+  .filter-group.imei-no {
+    display: none !important;
+  }
+   .filter-group.enter_days {
+    display: none !important;
+  }
+    .filter-group.pdf {
+    display: none !important;
+  }
+
+  /* Main content area */
+  main.dashboard-content {
+    transition: margin-left 0.3s;
+    background: var(--background-light);
+  }
+  body.dark-mode main.dashboard-content {
+    background: var(--card-dark);
+    color: var(--card-text-dark);
+  }
+  .sidebar:hover ~ main.dashboard-content {
+    margin-left: 188px;
+    width: calc(100vw - 260px);
+  }
+
+  /* Filter Bar */
+  .filter-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--filter-bg-light);
+    border-radius: 12px;
+    padding: 16px 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    box-shadow: var(--box-shadow-light);
+    border: 1px solid var(--card-border-light);
+    margin-bottom: 24px;
+    transition: background 0.3s, color 0.3s, border-color 0.3s;
+  }
+  body.dark-mode .filter-bar {
+    background: var(--filter-bg-dark);
+    border-color: var(--card-border-dark);
+    box-shadow: var(--box-shadow-dark);
+    color: var(--filter-text-dark);
+  }
+  .btn-search,
+  .btn-reset {
+    margin-top: 23px;
+    cursor: pointer;
+    border: none;
+    font-weight: 600;
+    font-size: 1.05rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 18px rgba(22, 36, 59, 0.12),
+      0 2px 6px rgba(22, 36, 59, 0.08);
+    background: inherit;
+    position: relative;
+    transition: transform 0.18s cubic-bezier(0.36, 1.43, 0.44, 1.01),
+      box-shadow 0.18s cubic-bezier(0.36, 1.43, 0.44, 1.01);
+
+    /* 3D gradient overlay for depth */
+    background-image: linear-gradient(
+      120deg,
+      rgba(255, 255, 255, 0.14) 0%,
+      rgba(255, 255, 255, 0.02) 94%
+    );
+  }
+
+  .btn-search:active,
+  .btn-reset:active {
+    transform: translateY(2px) scale(0.98);
+    box-shadow: 0 2px 7px rgba(22, 36, 59, 0.09),
+      0 1px 4px rgba(22, 36, 59, 0.08);
+  }
+
+  .btn-search:hover,
+  .btn-reset:hover {
+    box-shadow: 0 6px 24px rgba(160, 160, 160, 0.18),
+      0 3px 8px rgba(204, 204, 204, 0.1);
+    filter: brightness(1.06);
+    outline: none;
+  }
+
+  .btn-search:focus,
+  .btn-reset:focus {
+    box-shadow: 0 0 0 2px #8b5cf6, 0 4px 18px rgba(22, 36, 59, 0.12);
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    max-width: 180px;
+    min-width: 180px;
+    flex-grow: 1;
+  }
+  .filter-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: inherit;
+  }
+  .filter-select,
+  .filter-input {
+    border-radius: 8px;
+    border: 1px solid var(--card-border-light);
+    padding: 8px 12px;
+    font-size: 1rem;
+    color: var(--filter-text-light);
+    background: var(--card-light);
+    transition: background 0.3s, color 0.3s, border-color 0.3s;
+  }
+  body.dark-mode .filter-select,
+  body.dark-mode .filter-input {
+    background: var(--card-dark);
+    border-color: var(--card-border-dark);
+    color: var(--filter-text-dark);
+  }
+  .filter-select:focus,
+  .filter-input:focus {
+    outline: none;
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 2px #8b5cf6;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .filter-bar {
+      flex-direction: column;
+      gap: 16px;
+    }
+    main.dashboard-content {
+      padding: 12px;
+      width: 100vw;
+      margin-left: 0;
+    }
+    body.dark-mode main.dashboard-content {
+      width: 100vw;
+    }
+  }
+</style>
+
+<main class="dashboard-content">
+  <!-- Filter Bar -->
+  <div class="filter-bar" role="region" action="{% url 'status' %}" method="get" aria-label="Filter Alarms">
+
+    <div class="filter-group">      
+      <label for="filter-circle" class="filter-label">Circle</label>
+      <select
+        id="filter-circle"
+        class="filter-select"
+        aria-controls="alarmsTable"
+      >
+        <option>All</option>
+        <option>Mumbai</option>
+        <option>South</option>
+        <option>North</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="cluster" class="filter-label">Cluster</label>
+      <select
+        id="cluster"
+        class="filter-select"
+        name="cluster"
+      >
+        <option value="">All</option>
+            {% for c in clusters %}
+            <option value="{{ c.cluster }}" {% if c.cluster == current_cluster %}selected{% endif %}>{{ c.cluster }}</option>
+            {% endfor %}
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="filter-site-type" class="filter-label">Site Type</label>
+      <select
+        id="filter-site-type"
+        class="filter-select"
+        aria-controls="alarmsTable"
+      >
+        <option>All</option>
+        <option>Type A</option>
+        <option>Type B</option>
+        <option>Type C</option>
+      </select>
+    </div>
+    <div class="filter-group {% if hide_alarm_type %}alarm-type{% endif %}">
+      <label for="filter-alarm-type" class="filter-label">Alarm Type</label>
+      <select
+        id="filter-alarm-type"
+        class="filter-select"
+        aria-controls="alarmsTable"
+      >
+        <option>All</option>
+        <option>Mains Fail</option>
+        <option>DG Fail</option>
+        <option>Door Open</option>
+      </select>
+    </div>
+    <div class="filter-group {% if hide_site_name %}site-name{% endif %}">
+      <label for="filter-site-name" class="filter-label">Site Name</label>
+      <input
+        type="text"
+        placeholder="Enter Site Name"
+        id="filter-site-name"
+        class="filter-select"
+        name="site_name"
+      />
+    </div>
+    <div class="filter-group {% if hide_global_no %}global-no{% endif %}">
+      <label for="filter-global-no" class="filter-label">Global No</label>
+      <input
+        type="text"
+        placeholder="Enter Global No"
+        id="filter-global-no"
+        class="filter-select"
+        aria-controls="alarmsTable"
+      />
+    </div>
+    <div class="filter-group" >
+      <label for="filter-site-id" class="filter-label">Site ID (Search)</label>
+      <input
+        id="filter-site-id"
+        class="filter-input"
+        type="text"
+        aria-controls="alarmsTable"
+        placeholder="Enter Site ID..."
+      />
+    </div>
+    <div class="filter-group">
+      <label for="filter-date-range" class="filter-label">Date Range</label>
+      <input
+        id="filter-date-range"
+        class="filter-input"
+        type="date"
+        aria-controls="alarmsTable"
+      />
+    </div>
+    <div class="filter-group {% if hide_enter_days %}enter_days{% endif %}">
+      <label for="filter-global-no" class="filter-label">Enter Days</label>
+      <input
+        type="text"
+        placeholder="Enter Days"
+        id="filter-global-no"
+        class="filter-select"
+        aria-controls="alarmsTable"
+      />
+    </div>
+    <div class="filter-group {% if hide_imei_no %}imei-no{% endif %}" >
+      <label for="filter-site-id" class="filter-label">IMEI No (Search)</label>
+      <input
+        id="filter-site-id"
+        class="filter-input"
+        type="text"
+        aria-controls="alarmsTable"
+        placeholder="Enter IMEI No..."
+      />
+    </div>
+    <div class="filter-group {% if hide_export %}export{% endif %}">
+      <button type="submit" class="filter-input btn-search">Export to CSV</button>
+    </div>
+    <div class="filter-group {% if hide_pdf %}pdf{% endif %}">
+      <button type="submit" class="filter-input btn-search">Export to PDF</button>
+    </div>
+    <div class="filter-group">
+      <button type="submit" class="filter-input btn-search">Search</button>
+    </div>
+    <div class="filter-group">
+      <button type="reset" class="filter-input btn-reset">Reset</button>
+    </div>
+  </div>
+</main>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const filterIds = [
+      "filter-circle",
+      "filter-cluster",
+      "filter-site-type",
+      "filter-alarm-type",
+      "filter-site-name",
+      "filter-global-no",
+      "filter-site-id",
+      "filter-date-range",
+    ];
+
+    // Restore saved values on load
+    filterIds.forEach(id => {
+      const element = document.getElementById(id);
+      if (element) {
+        const savedValue = sessionStorage.getItem(id);
+        if (savedValue !== null) {
+          element.value = savedValue;
+        }
+      }
+    });
+
+    // Save on change/input for all filters
+    filterIds.forEach(id => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.addEventListener("change", () => {
+          sessionStorage.setItem(id, element.value);
+        });
+        element.addEventListener("input", () => {
+          sessionStorage.setItem(id, element.value);
+        });
+      }
+    });
+
+    // Reset button clears storage and resets inputs
+    const resetBtn = document.querySelector(".btn-reset");
+    if (resetBtn) {
+      resetBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        filterIds.forEach(id => sessionStorage.removeItem(id));
+        filterIds.forEach(id => {
+          const element = document.getElementById(id);
+          if (element) {
+            if (element.tagName === "SELECT") {
+              element.selectedIndex = 0;
+            } else {
+              element.value = "";
+            }
+          }
+        });
+        console.log("Filters reset and sessionStorage cleared");
+      });
+    }
+  });
+</script>
+

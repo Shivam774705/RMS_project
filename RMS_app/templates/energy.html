@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block body %}
+<style>
+  /* Reuse or customize the styles similar to your dashboard */
+  .main-content {
+    margin-top: 56px;
+    margin-left: 220px;
+    padding-top: 24px;
+    padding-bottom: 56px;
+    min-height: 100vh;
+    overflow-y: auto;
+    background: #f8f9fa;
+    color: #212529;
+  }
+  .card {
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
+    color: #212529;
+  }
+  .chart-box {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+    box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
+  }
+  h2, h5 { color: #343a40; }
+  p { color: #495057; }
+</style>
+
+<main class="main-content container-fluid p-4">
+  <h2 class="mb-4">Energy Dashboard</h2>
+  <p>
+    Overview of energy generation, consumption, and efficiency metrics to monitor and optimize energy usage.
+  </p>
+
+  <div class="row mb-4">
+    <div class="col-md-3 mb-3"><div class="card text-center">Total Energy Generated</div></div>
+    <div class="col-md-3 mb-3"><div class="card text-center">Energy Consumed</div></div>
+    <div class="col-md-3 mb-3"><div class="card text-center">Energy Efficiency</div></div>
+    <div class="col-md-3 mb-3"><div class="card text-center">Carbon Footprint</div></div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="chart-box">
+        <h5>Energy Production Over Time</h5>
+        <canvas id="energyProductionChart"></canvas>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="chart-box">
+        <h5>Energy Consumption Breakdown</h5>
+        <canvas id="energyConsumptionChart"></canvas>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  const ctxEnergyProd = document.getElementById('energyProductionChart').getContext('2d');
+  new Chart(ctxEnergyProd, {
+    type: 'line',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      datasets: [{
+        label: 'Energy Produced (kWh)',
+        data: [1200, 1350, 1280, 1400, 1550, 1620],
+        borderColor: '#1f77b4',
+        backgroundColor: 'rgba(31,119,180,0.2)',
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: { responsive: true }
+  });
+
+  const ctxEnergyCons = document.getElementById('energyConsumptionChart').getContext('2d');
+  new Chart(ctxEnergyCons, {
+    type: 'doughnut',
+    data: {
+      labels: ['Residential', 'Commercial', 'Industrial', 'Others'],
+      datasets: [{
+        label: 'Energy Consumption',
+        data: [45, 30, 20, 5],
+        backgroundColor: ['#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
+      }]
+    },
+    options: { responsive: true }
+  });
+</script>
+{% endblock body %}

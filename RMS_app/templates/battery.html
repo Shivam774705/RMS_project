@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block body %}
+<style>
+  /* ---------- Theme Variables ---------- */
+  :root {
+    --bg-main: #f8f9fa;
+    --text-main: #212529;
+    --card-bg: #ffffff;
+    --card-text: #212529;
+    --shadow-color: rgba(0,0,0,0.1);
+  }
+
+  body.dark-mode {
+    --bg-main: #101c2c;
+    --text-main: #d5d9e4;
+    --card-bg: #141f34;
+    --card-text: #f0f2f8;
+    --shadow-color: rgba(0,0,0,0.5);
+  }
+
+  body {
+    background: var(--bg-main); /* Body background same as content */
+    transition: background 0.3s;
+  }
+
+  /* ---------- Main Content ---------- */
+  .main-content {
+    margin-top: 56px;       /* top-bar height */
+    margin-left: 72px;      /* collapsed sidebar width */
+    padding: 24px;
+    min-height: 100vh;
+    background: var(--bg-main);
+    color: var(--text-main);
+    overflow-y: auto;
+    transition: background 0.3s, color 0.3s, margin-left 0.3s;
+  }
+
+  /* Expand margin when sidebar hovered */
+  .sidebar:hover ~ .main-content {
+    margin-left: 260px; /* fully open sidebar */
+  }
+
+  /* ---------- Card Styling ---------- */
+  .card {
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 0.25rem 0.5rem var(--shadow-color);
+    color: var(--card-text);
+    transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+  }
+
+  /* ---------- Chart Container ---------- */
+  .chart-box {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+    box-shadow: 0 0.25rem 0.5rem var(--shadow-color);
+    color: var(--card-text);
+    transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+  }
+
+  h2, h5, p {
+    color: var(--text-main);
+    transition: color 0.3s;
+  }
+
+  /* ---------- Dark Mode Overrides ---------- */
+  .dark-mode body,
+  .dark-mode .main-content {
+    background: var(--bg-main);
+    color: var(--text-main);
+  }
+
+  .dark-mode .card {
+    background: var(--card-bg);
+    color: var(--card-text);
+    box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.5);
+  }
+
+  .dark-mode .chart-box {
+    background: var(--card-bg);
+    color: var(--card-text);
+    box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.6);
+  }
+</style>
+
+<main class="main-content container-fluid p-4">
+  <h2 class="mb-4">Battery Management</h2>
+  <p>Track battery status, charge cycles, health, and capacity utilization.</p>
+
+  <div class="row mb-4">
+    <div class="col-md-3 mb-3"><div class="card text-center">Current Charge (%)</div></div>
+    <div class="col-md-3 mb-3"><div class="card text-center">Battery Health</div></div>
+    <div class="col-md-3 mb-3"><div class="card text-center">Charge Cycles</div></div>
+    <div class="col-md-3 mb-3"><div class="card text-center">Estimated Life</div></div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="chart-box">
+        <h5>Charge Level Over Time</h5>
+        <canvas id="chargeLevelChart"></canvas>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="chart-box">
+        <h5>Battery Health Distribution</h5>
+        <canvas id="batteryHealthChart"></canvas>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  const ctxCharge = document.getElementById('chargeLevelChart').getContext('2d');
+  new Chart(ctxCharge, {
+    type: 'line',
+    data: {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      datasets: [{
+        label: 'Charge Level (%)',
+        data: [80, 75, 70, 85, 90, 95, 93],
+        borderColor: '#ff7f0e',
+        backgroundColor: 'rgba(255,127,14,0.2)',
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: { responsive: true }
+  });
+
+  const ctxHealth = document.getElementById('batteryHealthChart').getContext('2d');
+  new Chart(ctxHealth, {
+    type: 'doughnut',
+    data: {
+      labels: ['Good', 'Average', 'Poor'],
+      datasets: [{
+        data: [60, 25, 15],
+        backgroundColor: ['#4caf50', '#ffeb3b', '#f44336']
+      }]
+    },
+    options: { responsive: true }
+  });
+</script>
+{% endblock body %}
