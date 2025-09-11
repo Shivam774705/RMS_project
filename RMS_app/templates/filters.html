@@ -181,6 +181,22 @@
       width: 100vw;
     }
   }
+  .date-time {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px; /* spacing between label-input pairs */
+  flex-wrap: nowrap; /* prevent wrapping */
+}
+
+.date-time label {
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.date-time input {
+  min-width: 180px;
+}
 </style>
 
 <main class="dashboard-content">
@@ -271,16 +287,7 @@
         placeholder="Enter Site ID..."
       />
     </div>
-    <div class="filter-group">
-      <label for="filter-date-range" class="filter-label">Date Range</label>
-      <input
-        id="filter-date-range"
-        class="filter-input"
-        type="date"
-        aria-controls="alarmsTable"
-      />
-    </div>
-    <div class="filter-group {% if hide_enter_days %}enter_days{% endif %}">
+        <div class="filter-group {% if hide_enter_days %}enter_days{% endif %}">
       <label for="filter-global-no" class="filter-label">Enter Days</label>
       <input
         type="text"
@@ -300,12 +307,21 @@
         placeholder="Enter IMEI No..."
       />
     </div>
-    <div class="filter-group {% if hide_export %}export{% endif %}">
+    <div class="filter-group ">
+      <label for="filter-from" class="filter-label">Date Range</label>
+      <div class=" date-time">
+      <label for="filter-from" class="filter-label">From:</label>
+      <input type="datetime-local" id="filter-from" class="filter-input" name="from_date" disabled />
+      <label for="filter-to" class="filter-label">To:</label>
+      <input type="datetime-local" id="filter-to" class="filter-input" name="to_date" disabled />
+      </div>      
+    </div>
+    {% comment %} <div class="filter-group {% if hide_export %}export{% endif %}">
       <button type="submit" class="filter-input btn-search">Export to CSV</button>
     </div>
     <div class="filter-group {% if hide_pdf %}pdf{% endif %}">
       <button type="submit" class="filter-input btn-search">Export to PDF</button>
-    </div>
+    </div> {% endcomment %}
     <div class="filter-group">
       <button type="submit" class="filter-input btn-search">Search</button>
     </div>
