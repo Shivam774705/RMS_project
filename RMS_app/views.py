@@ -204,6 +204,7 @@ def status(request):
         'hide_alarm_type':True,
         'hide_imei_no':True,
         'hide_enter_days':True,
+        'hide_date': True,
     }
     
     return render(request, "status.html", context)
