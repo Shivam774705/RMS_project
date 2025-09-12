@@ -294,3 +294,33 @@ class AlEscalationMaster(models.Model):
     class Meta:
         managed = False
         db_table = 'al_escalation_master'
+
+class RmsAlarmCommon(models.Model):
+    imei = models.CharField(max_length=32, primary_key=True)  # Add primary_key=True
+    site_id = models.CharField(max_length=64)
+    site_name = models.CharField(max_length=128)
+    cluster_id = models.CharField(max_length=64)
+    dist_id = models.CharField(max_length=64)
+    state_id = models.CharField(max_length=64)
+    DOOR_ALARM = models.BooleanField()
+    MAINS_FAIL = models.BooleanField()
+    DG_ON = models.BooleanField()
+    DG_Failed_to_start = models.BooleanField()
+    DG_FUEL_LEVEL_LOW1 = models.BooleanField()
+    SITE_ON_BATTERY = models.BooleanField()
+    HIGH_TEMPERATURE = models.BooleanField()
+    FIRE_and_SMOKE = models.BooleanField()
+    LOW_BATTERY_VOLTAGE = models.BooleanField()
+    EMERGENCY_FAULT = models.BooleanField()
+    LLOP_FAULT = models.BooleanField()
+    DG_OVERLOAD = models.BooleanField()
+    DG_FUEL_LEVEL_LOW2 = models.BooleanField()
+    ALTERNATOR_FAULT = models.BooleanField()
+    DG_Failed_to_stop = models.BooleanField()
+    reserve = models.CharField(max_length=128, blank=True, null=True)
+    created_dt = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'rms_alarm_common_table'
+

@@ -49,7 +49,8 @@
     min-height: 120px;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
+    padding: 0px 20px;
     justify-content: center;
     background: var(--card-light);
     border-radius: 12px;
@@ -57,7 +58,43 @@
     box-shadow: var(--box-shadow-light);
     border: 1px solid var(--card-border-light);
     transition: background 0.2s, color 0.2s, border-color 0.2s;
-    margin-bottom: 16px;
+  }
+  .text-flex {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .data{
+    color: #a0a742ff;
+    font-weight: 700;
+  }
+  .data-green{
+    color: #00e823ff;
+    font-weight: 700;
+  }
+  .dark-mode .data-green{
+    color: #3ecb68;
+    font-weight: 700;
+  }
+  .data-red{
+    color: red;
+    font-weight: 700;
+  }
+  .dark-mode .data-red{
+    color: #d61c4eff;
+    font-weight: 700;
+  }
+  .data-orange{
+    color: orange;
+    font-weight: 700;
+  }
+  .data-yellow{
+    color: #ffd65cff;
+    font-weight: 700;
+  }
+  .dark-mode .data-yellow{
+    color: #fcdb7c;
+    font-weight: 700;
   }
   body.dark-mode .card {
     background: var(--card-dark);
@@ -66,24 +103,22 @@
     box-shadow: var(--box-shadow-dark);
   }
 
-  .card .title {
-    font-size: 1.1rem;
-    font-weight: 500;
-    margin-bottom: 4px;
-  }
   .card .main-value {
-    font-size: 2.5rem;
+    font-size: 1.8rem;
     font-weight: 700;
-    margin-bottom: 0;
   }
-  .card .trend {
+  .card .title {
     font-size: 1rem;
-    color: #3ecb68;
+    font-weight: 500;
   }
-  body.dark-mode .card .trend {
-    color: #8fe8ad;
+  .title:hover{   
+    background-color: #e3e6e9ff;
+    border-radius: 10px;
   }
-
+  .dark-mode .title:hover{
+    background-color: #14305fff;
+    border-radius: 10px;
+  }
   .chart-box {
     background: var(--chart-box-light);
     border-radius: 12px;
@@ -107,41 +142,80 @@
     <div class="row mb-4">
       <div class="col-md-3">
         <a href="{% url 'status' %}" style="text-decoration: none">
-          <div class="card text-center">
-            <div class="title">Site Status</div>
-            <div class="main-value">98</div>
-            <div class="trend">Trend +2</div>
+          <div class="card ">
+            <div class="text-flex">
+              <div class="main-value">Site Status</div>
+              <div class="main-value data">150</div>
+            </div>
+            <div class="text-flex title">
+              <div class="title">Active</div>
+              <div class="title data-green">100</div>
+            </div>
+            <div class="text-flex title">
+              <div class="title">Non-Active</div>
+              <div class="title data-red">50</div>
+            </div>
           </div>
         </a>
       </div>
       <div class="col-md-3">
         <a href="{% url 'live_alarms' %}" style="text-decoration: none">
-          <div
-            class="card text-center"
-            role="button"
-            tabindex="0"
-            aria-label="Navigate to Live Alarms Filters"
-          >
-            <div class="title">Live Alarms</div>
-            <div class="main-value">12</div>
-            <div class="trend">Trend +5%</div>
+          <div class="card" >
+            <div class="text-flex">
+              <div class="main-value">Live Alarms</div>
+              <div class="main-value data">200</div>
+            </div>
+            <div class="text-flex title">
+              <div class="title">Criticle</div>
+              <div class="title data-red">20</div>  
+            </div>            
+            <div class="text-flex title">
+              <div class="title">Major</div>
+              <div class="title data-orange">70</div>  
+            </div>            
+            <div class="text-flex title">
+              <div class="title">Minor</div>
+              <div class="title data-yellow">110</div>  
+            </div>
           </div>
         </a>
       </div>
 
       <div class="col-md-3">
-        <div class="card text-center">
-          <div class="title">Probable Outage</div>
-          <div class="main-value">99.7%</div>
-          <div class="trend">Trend +0.1%</div>
-        </div>
+        <div class="card">
+          <div class="text-flex">
+            <div class="main-value">Probable Outage</div>
+            <div class="main-value data"></div>
+          </div>
+          <div class="text-flex title">
+            <div class="title">Sites</div>
+            <div class="title data-red"></div>
+          </div>
+          <div class="text-flex title">
+            <div class="title">Devices</div>
+            <div class="title data-green"></div>
+          </div>
+        </div>  
       </div>
       <div class="col-md-3">
         <a href="{% url 'rovo_call' %}" style="text-decoration: none">
-          <div class="card text-center">
-            <div class="title">Robotic Call Status</div>
-            <div class="main-value">95</div>
-            <div class="trend">Trend +3%</div>
+          <div class="card">
+            <div class="text-flex">
+              <div class="main-value">Roboric Call </div>
+              <div class="main-value data">1700</div>
+            </div>
+            <div class="text-flex title">
+              <div class="title">Responded</div>
+              <div class="title data-green">1100</div>  
+            </div>
+            <div class="text-flex title">
+              <div class="title">Not Responded</div>
+              <div class="title data-red">300</div>  
+            </div>
+            <div class="text-flex title">
+              <div class="title">Failed Attempts</div>
+              <div class="title data-yellow">300</div>  
+            </div>
           </div>
         </a>
       </div>

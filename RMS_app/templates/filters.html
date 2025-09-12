@@ -51,6 +51,9 @@
     .filter-group.pdf {
     display: none !important;
   }
+  .filter-group.date-range {
+    display: none !important;
+  }
 
   /* Main content area */
   main.dashboard-content {
@@ -307,7 +310,7 @@
         placeholder="Enter IMEI No..."
       />
     </div>
-    <div class="filter-group ">
+    <div class="filter-group {% if hide_date %}date-range{% endif %}">
       <label for="filter-from" class="filter-label">Date Range</label>
       <div class=" date-time">
       <label for="filter-from" class="filter-label">From:</label>

@@ -19,14 +19,12 @@
     --box-shadow-light: 0 2px 8px rgba(22,36,59,0.03);
     --box-shadow-dark: 0 2px 8px rgba(10,24,48,0.12);
   }
-  /* Hide sidebar when no-sidebar class present */
   div.no-sidebar .sidebar {
     display: none !important;
   }
   div.no-sidebar .main-content {
     margin-left: 0 !important;
   }
-  /* Add transitions if needed for smooth effect */
   .main-content {
     transition: margin-left 0.3s, width 0.3s;
   }
@@ -39,7 +37,6 @@
     background: var(--background-dark);
     color: var(--card-text-dark);
   }
-
   a{
     display: inline-flex;
     align-items: center;
@@ -54,17 +51,13 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
   }
-
   .dark-mode a {
     color: #fff;
   }
-
   .alarm-layout {
     display: flex;
     min-height: calc(100vh - 56px);
   }
-
-  /* Sidebar - KPI Section */
   .alarm-sidebar {
     width: var(--sidebar-width);
     min-width: var(--sidebar-width);
@@ -90,6 +83,16 @@
     margin-bottom: 1.2rem;
     display: flex;
     align-items: center;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+  }
+  .kpi-entry:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+  }
+  .kpi-entry.active {
+    background-color: rgba(0, 123, 255, 0.2);
   }
   .kpi-label {
     font-weight: 500;
@@ -111,7 +114,6 @@
   .dot-minor   { background: #ffd600; }
   .dot-total   { background: #5e7bfd; }
 
-  /* Main Content */
   .main-content {
     flex: 1 1 0;
     padding: 2.2rem 2.8rem;
@@ -119,7 +121,6 @@
     background: transparent;
     transition: background 0.2s;
   }
-  /* Alarm Table */
   .alarm-table {
     width: 100%;
     background: var(--card-light);
@@ -157,45 +158,43 @@
 </style>
 
 <div class="alarm-layout">
-  <!-- Sidebar: KPIs -->
   <aside class="alarm-sidebar">    
     <div class="sidebar-title">
       Live Alarm Summary
     </div>
-    <div class="kpi-entry">
+    <div class="kpi-entry" data-severity="all">
       <span class="kpi-dot dot-total"></span>
       <span class="kpi-label">Active Alarms</span>
-      <span class="kpi-value">125</span>
+      <span class="kpi-value" id="activeAlarmsCount">0</span>
     </div>
-    <div class="kpi-entry">
+    <div class="kpi-entry" data-severity="Critical">
       <span class="kpi-dot dot-critical"></span>
       <span class="kpi-label">Critical Alarms</span>
-      <span class="kpi-value">35</span>
+      <span class="kpi-value" id="criticalAlarmsCount">0</span>
     </div>
-    <div class="kpi-entry">
+    <div class="kpi-entry" data-severity="Major">
       <span class="kpi-dot dot-major"></span>
       <span class="kpi-label">Major Alarms</span>
-      <span class="kpi-value">55</span>
+      <span class="kpi-value" id="majorAlarmsCount">0</span>
     </div>
-    <div class="kpi-entry">
+    <div class="kpi-entry" data-severity="Minor">
       <span class="kpi-dot dot-minor"></span>
       <span class="kpi-label">Minor Alarms</span>
-      <span class="kpi-value">35</span>
+      <span class="kpi-value" id="minorAlarmsCount">0</span>
     </div>
   </aside>
 
-  <!-- Main Content: Filters + Alarm Table -->
-  <section class="main-content"> 
+  <section class="main-content">
     <a href="/index">
-    <svg xmlns="http://www.w3.org/2000/svg" 
-        width="18" height="18" fill="none" stroke="currentColor"
-        viewBox="0 0 18 18" style="vertical-align: middle; margin-right: 7px;">
+      <svg xmlns="http://www.w3.org/2000/svg" 
+           width="18" height="18" fill="none" stroke="currentColor"
+           viewBox="0 0 18 18" style="vertical-align: middle; margin-right: 7px;">
         <path d="M12 15l-6-6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    Back
+      </svg>
+      Back
     </a>
 
-    {% include "filters.html" %}   
+    {% include "filters.html" %}
     <div style="font-size:1.08rem;font-weight:600;margin-bottom:1.1rem;">Alarm Table (Real-Time Feed)</div>
     <div class="table-responsive">
       <table class="alarm-table" id="alarmsTable">
@@ -208,28 +207,8 @@
             <th>Status</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>12456</td>
-            <td>Mains Fail</td>
-            <td><span class="kpi-dot dot-critical"></span><span class="severity-text" style="color:#ed4040;">Critical</span></td>
-            <td>10:31 AM</td>
-            <td>Open</td>
-          </tr>
-          <tr>
-            <td>12457</td>
-            <td>DG Fail</td>
-            <td><span class="kpi-dot dot-major"></span><span class="severity-text" style="color:#f9a120;">Major</span></td>
-            <td>10:29 AM</td>
-            <td>Open</td>
-          </tr>
-          <tr>
-            <td>12458</td>
-            <td>Door Open</td>
-            <td><span class="kpi-dot dot-minor"></span><span class="severity-text" style="color:#ffd600;">Minor</span></td>
-            <td>10:27 AM</td>
-            <td>Acknowledged</td>
-          </tr>
+        <tbody id="alarmsTableBody">
+          <!-- Dynamic rows inserted here -->
         </tbody>
       </table>
     </div>
@@ -238,6 +217,127 @@
 
 <script>
   document.body.classList.add('no-sidebar');
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const kpiEntries = document.querySelectorAll(".kpi-entry");
+    const tableBody = document.getElementById("alarmsTableBody");
+    const activeCountElem = document.getElementById("activeAlarmsCount");
+    const criticalCountElem = document.getElementById("criticalAlarmsCount");
+    const majorCountElem = document.getElementById("majorAlarmsCount");
+    const minorCountElem = document.getElementById("minorAlarmsCount");
+
+    function getAlarmType(alarm) {
+      if (alarm.MAINS_FAIL) return "Mains Fail";
+      if (alarm.DG_Failed_to_start) return "DG Fail";
+      if (alarm.DOOR_ALARM) return "Door Open";
+      if (alarm.LOW_BATTERY_VOLTAGE) return "Battery Low";
+      if (alarm.DG_OVERLOAD) return "Overload";
+      if (alarm.HIGH_TEMPERATURE) return "Temperature High";
+      if (alarm.COMMUNICATION_LOST) return "Communication Lost";
+      if (alarm.POWER_FLUCTUATION) return "Power Fluctuation";
+      if (alarm.SENSOR_FAILURE) return "Sensor Failure";
+      // Add other alarm types as needed
+      return "Unknown";
+    }
+
+    function getSeverity(alarm) {
+      if (alarm.MAINS_FAIL || alarm.LOW_BATTERY_VOLTAGE || alarm.DG_Failed_to_start || alarm.COMMUNICATION_LOST) return "Critical";
+      if (alarm.DG_OVERLOAD || alarm.POWER_FLUCTUATION) return "Major";
+      if (alarm.DOOR_ALARM || alarm.HIGH_TEMPERATURE || alarm.SENSOR_FAILURE) return "Minor";
+      return "Unknown";
+    }
+
+    function getSeverityDotClass(severity) {
+      switch(severity) {
+        case "Critical": return "dot-critical";
+        case "Major": return "dot-major";
+        case "Minor": return "dot-minor";
+        default: return "";
+      }
+    }
+
+    function getSeverityColor(severity) {
+      switch(severity) {
+        case "Critical": return "#ed4040";
+        case "Major": return "#f9a120";
+        case "Minor": return "#ffd600";
+        default: return "#000";
+      }
+    }
+
+    function formatTimestamp(timestamp) {
+      if (!timestamp) return "";
+      const date = new Date(timestamp);
+      return date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    }
+
+    function updateKpiCounts(data) {
+      let critical = 0, major = 0, minor = 0;
+      data.forEach(alarm => {
+        const sev = getSeverity(alarm);
+        if (sev === "Critical") critical++;
+        else if (sev === "Major") major++;
+        else if (sev === "Minor") minor++;
+      });
+      activeCountElem.textContent = data.length;
+      criticalCountElem.textContent = critical;
+      majorCountElem.textContent = major;
+      minorCountElem.textContent = minor;
+    }
+
+    function renderTable(data) {
+      tableBody.innerHTML = "";
+      data.forEach(alarm => {
+        const severity = getSeverity(alarm);
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${alarm.site_id || ''}</td>
+          <td>${getAlarmType(alarm)}</td>
+          <td>
+            <span class="kpi-dot ${getSeverityDotClass(severity)}"></span>
+            <span class="severity-text" style="color:${getSeverityColor(severity)};">${severity}</span>
+          </td>
+          <td>${formatTimestamp(alarm.created_dt)}</td>
+          <td>${alarm.status || "Open"}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+      setupKpiFilter();
+    }
+
+    function setupKpiFilter() {
+      const rows = document.querySelectorAll("#alarmsTableBody tr");
+      kpiEntries.forEach(entry => {
+        entry.addEventListener("click", () => {
+          const severity = entry.getAttribute("data-severity");
+          rows.forEach(row => {
+            const cell = row.querySelector("td:nth-child(3) .severity-text");
+            const rowSeverity = cell ? cell.textContent.trim() : "";
+            if (severity === "all" || rowSeverity === severity) {
+              row.style.display = "";
+            } else {
+              row.style.display = "none";
+            }
+          });
+          kpiEntries.forEach(e => e.classList.remove("active"));
+          entry.classList.add("active");
+        });
+      });
+      // Default to show all on load
+      document.querySelector('.kpi-entry[data-severity="all"]').click();
+    }
+
+    // Fetch alarm data from REST API and render
+    fetch('/api/alarms/')
+      .then(response => response.json())
+      .then(data => {
+        updateKpiCounts(data);
+        renderTable(data);
+      })
+      .catch(error => {
+        console.error("Error loading alarm data:", error);
+      });
+  });
 </script>
 
 {% endblock body %}

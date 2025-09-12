@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'RMS_app',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -107,7 +108,7 @@ DATABASES = {
         'NAME': 'shrotigr_shrotigroup',
         'USER': 'root',
         'PASSWORD': 'root',
-        'HOST': '192.168.1.30',
+        'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"

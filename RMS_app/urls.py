@@ -16,6 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . import views
+from RMS_app.views import RmsAlarmCommonList 
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -34,4 +36,5 @@ urlpatterns = [
     path('get_districts_for_filter/<str:state_id>/', views.get_districts_for_filter, name='get_districts_for_filter'),
     path('get_clusters_for_filter/<str:dist_id>/', views.get_clusters_for_filter, name='get_clusters_for_filter'),
     path('rovo_call/',views.rovo_call, name='rovo_call'),
+    path('api/alarms/', RmsAlarmCommonList.as_view(), name='api-alarms-list'),
 ]

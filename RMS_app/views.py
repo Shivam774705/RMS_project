@@ -7,6 +7,17 @@ from django.contrib import messages
 from .decorators import custom_login_required
 from django.core.paginator import Paginator
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .serializers import RmsAlarmCommonSerializer
+
+class RmsAlarmCommonList(APIView):
+    def get(self, request, format=None):
+        alarms = RmsAlarmCommon.objects.using('third_db').all()
+        serializer = RmsAlarmCommonSerializer(alarms, many=True)
+        return Response(serializer.data)
+
+
 # Create your views here.
 # @custom_login_required
 # def index(request):
@@ -96,19 +107,22 @@ def filters(request):
     state_data = TpmsStateMaster.objects.using('third_db').all.order_by('state_name')
     print(state_data)
     return render(request, 'filters.html', {'state_data': state_data})
-
 @custom_login_required
 def live_alarms(request):
-    # Fetch states from third_db
+    # Query all records from RmsAlarmCommon using 'third_db'
+    alarms = RmsAlarmCommon.objects.using('third_db').all()
     state_data = TpmsStateMaster.objects.using('third_db').all().order_by('state_name')
     context = {
-        'state_data':state_data,
-        'hide_site_name':True,
-        'hide_global_no':True,
-        'hide_imei_no':True,
-        'hide_enter_days':True,
+        'alarms': alarms,
+        'state_data': state_data,
+        'hide_site_name': True,
+        'hide_global_no': True,
+        'hide_imei_no': True,
+        'hide_enter_days': True,
+        'hide_date': True,
     }
     return render(request, 'live_alarms.html', context)
+
 
 @custom_login_required
 def maps(request):
