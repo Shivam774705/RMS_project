@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .decorators import custom_login_required
 from django.core.paginator import Paginator
+from django.db.models import Max
+
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -13,9 +15,17 @@ from .serializers import RmsAlarmCommonSerializer
 
 class RmsAlarmCommonList(APIView):
     def get(self, request, format=None):
-        alarms = RmsAlarmCommon.objects.using('third_db').all()
+        latest = RmsAlarmCommon.objects.using('third_db').aggregate(
+            latest_date=Max('created_dt')
+        )['latest_date']
+
+        alarms = RmsAlarmCommon.objects.using('third_db').filter(
+            created_dt__date=latest.date()
+        )
+
         serializer = RmsAlarmCommonSerializer(alarms, many=True)
         return Response(serializer.data)
+
 
 
 # Create your views here.
@@ -107,11 +117,21 @@ def filters(request):
     state_data = TpmsStateMaster.objects.using('third_db').all.order_by('state_name')
     print(state_data)
     return render(request, 'filters.html', {'state_data': state_data})
+
 @custom_login_required
 def live_alarms(request):
-    # Query all records from RmsAlarmCommon using 'third_db'
-    alarms = RmsAlarmCommon.objects.using('third_db').all()
+    # Find the latest date
+    latest = RmsAlarmCommon.objects.using('third_db').aggregate(
+        latest_date=Max('created_dt')
+    )['latest_date']
+
+    # Filter alarms only from that date
+    alarms = RmsAlarmCommon.objects.using('third_db').filter(
+        created_dt__date=latest.date()
+    )
+
     state_data = TpmsStateMaster.objects.using('third_db').all().order_by('state_name')
+
     context = {
         'alarms': alarms,
         'state_data': state_data,
@@ -223,3 +243,6 @@ def get_clusters_for_filter(request, dist_id):
     except Exception as e:
         print("Error in get_clusters_report_total:", str(e))
         return JsonResponse({'error': str(e)}, status=500)
+    
+
+

@@ -37,4 +37,6 @@ urlpatterns = [
     path('get_clusters_for_filter/<str:dist_id>/', views.get_clusters_for_filter, name='get_clusters_for_filter'),
     path('rovo_call/',views.rovo_call, name='rovo_call'),
     path('api/alarms/', RmsAlarmCommonList.as_view(), name='api-alarms-list'),
+    # path('api/filter_alarms/', views.filter_alarms_api, name='filter-alarms-api'),
+
 ]

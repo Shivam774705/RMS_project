@@ -204,7 +204,9 @@
             <th>Alarm Type</th>
             <th>Severity</th>
             <th>Timestamp</th>
+            <th>date</th>
             <th>Status</th>
+
           </tr>
         </thead>
         <tbody id="alarmsTableBody">
@@ -266,10 +268,17 @@
     }
 
     function formatTimestamp(timestamp) {
-      if (!timestamp) return "";
-      const date = new Date(timestamp);
-      return date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    }
+  if (!timestamp) return "";
+  const date = new Date(timestamp);
+  return date.toLocaleString([], { 
+    year: 'numeric', 
+    month: '2-digit', 
+    day: '2-digit',
+    hour: '2-digit', 
+    minute: '2-digit'
+  });
+}
+
 
     function updateKpiCounts(data) {
       let critical = 0, major = 0, minor = 0;
@@ -331,6 +340,8 @@
     fetch('/api/alarms/')
       .then(response => response.json())
       .then(data => {
+         const count = data.length;   // ✅ total records
+         console.log("Total alarms:", count);
         updateKpiCounts(data);
         renderTable(data);
       })
