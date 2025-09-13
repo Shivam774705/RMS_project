@@ -162,20 +162,20 @@
         <a href="{% url 'live_alarms' %}" style="text-decoration: none">
           <div class="card" >
             <div class="text-flex">
-              <div class="main-value">Live Alarms</div>
-              <div class="main-value data">200</div>
+              <div class="main-value" >Live Alarms</div>
+              <div class="main-value data" id="totalAlarms">0</div>
             </div>
             <div class="text-flex title">
               <div class="title">Criticle</div>
-              <div class="title data-red">20</div>  
+              <div class="title data-red" id="criticalAlarms">0</div>  
             </div>            
             <div class="text-flex title">
               <div class="title">Major</div>
-              <div class="title data-orange">70</div>  
+              <div class="title data-orange" id="majorAlarms">0</div>  
             </div>            
             <div class="text-flex title">
               <div class="title">Minor</div>
-              <div class="title data-yellow">110</div>  
+              <div class="title data-yellow" id="minorAlarms">0</div>  
             </div>
           </div>
         </a>
@@ -340,4 +340,59 @@
       document.body.classList.toggle("dark-mode");
     });
 </script>
+<script>
+  function getSeverity(alarm) {
+    if (
+      alarm.LOW_BATTERY_VOLTAGE ||
+      alarm.FIRE_and_SMOKE ||
+      alarm.EMERGENCY_FAULT ||
+      alarm.ALTERNATOR_FAULT
+    ) return "Critical";
+
+    if (
+      alarm.DG_OVERLOAD ||
+      alarm.HIGH_TEMPERATURE ||
+      alarm.DG_FUEL_LEVEL_LOW1 ||
+      alarm.DG_FUEL_LEVEL_LOW2 ||
+      alarm.DG_Failed_to_start ||
+      alarm.LLOP_FAULT ||
+      alarm.DG_Failed_to_stop ||
+      alarm.reserve
+    ) return "Major";
+
+    if (
+      alarm.DOOR_ALARM ||
+      alarm.DG_ON ||
+      alarm.MAINS_FAIL ||
+      alarm.SITE_ON_BATTERY
+    ) return "Minor";
+
+    return "Unknown";
+  }
+
+  function updateAlarmCounts(data) {
+    let critical = 0, major = 0, minor = 0;
+
+    data.forEach(alarm => {
+      const sev = getSeverity(alarm);
+      if (sev === "Critical") critical++;
+      else if (sev === "Major") major++;
+      else if (sev === "Minor") minor++;
+    });
+
+    document.getElementById("totalAlarms").textContent = data.length;
+    document.getElementById("criticalAlarms").textContent = critical;
+    document.getElementById("majorAlarms").textContent = major;
+    document.getElementById("minorAlarms").textContent = minor;
+  }
+
+  // Fetch API data and update counts
+  fetch("/api/alarms/")
+    .then(res => res.json())
+    .then(data => {
+      updateAlarmCounts(data);
+    })
+    .catch(err => console.error("Error fetching alarm counts:", err));
+</script>
+
 {% endblock body %}

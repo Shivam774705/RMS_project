@@ -264,7 +264,6 @@
             <th>Alarm Type</th>
             <th>Severity</th>
             <th>Timestamp</th>
-            <th>date</th>
             <th>Status</th>
           </tr>
         </thead>
@@ -288,32 +287,65 @@
     const minorCountElem = document.getElementById("minorAlarmsCount");
 
     function getAlarmType(alarm) {
-      if (alarm.MAINS_FAIL) return "Mains Fail";
-      if (alarm.DG_Failed_to_start) return "DG Fail";
-      if (alarm.DOOR_ALARM) return "Door Open";
-      if (alarm.LOW_BATTERY_VOLTAGE) return "Battery Low";
-      if (alarm.DG_OVERLOAD) return "Overload";
-      if (alarm.HIGH_TEMPERATURE) return "Temperature High";
-      if (alarm.COMMUNICATION_LOST) return "Communication Lost";
-      if (alarm.POWER_FLUCTUATION) return "Power Fluctuation";
-      if (alarm.SENSOR_FAILURE) return "Sensor Failure";
-      // Add other alarm types as needed
-      return "Unknown";
-    }
+  if (alarm.DOOR_ALARM) return "Door Open";
+  if (alarm.MAINS_FAIL) return "Mains Fail";
+  if (alarm.DG_ON) return "DG On";
+  if (alarm.DG_Failed_to_start) return "DG Failed to Start";
+  if (alarm.DG_FUEL_LEVEL_LOW1) return "DG Fuel Level Low 1";
+  if (alarm.SITE_ON_BATTERY) return "Site on Battery";
+  if (alarm.HIGH_TEMPERATURE) return "High Temperature";
+  if (alarm.FIRE_and_SMOKE) return "Fire and Smoke";
+  if (alarm.LOW_BATTERY_VOLTAGE) return "Low Battery Voltage";
+  if (alarm.EMERGENCY_FAULT) return "Emergency Fault";
+  if (alarm.LLOP_FAULT) return "LLOP Fault";
+  if (alarm.DG_OVERLOAD) return "DG Overload";
+  if (alarm.DG_FUEL_LEVEL_LOW2) return "DG Fuel Level Low 2";
+  if (alarm.ALTERNATOR_FAULT) return "Alternator Fault";
+  if (alarm.DG_Failed_to_stop) return "DG Failed to Stop";
+  if (alarm.reserve) return "Reserve Alarm";
+  
+  return "Unknown";
+}
 
-    function getSeverity(alarm) {
-      if (
-        alarm.MAINS_FAIL ||
-        alarm.LOW_BATTERY_VOLTAGE ||
-        alarm.DG_Failed_to_start ||
-        alarm.COMMUNICATION_LOST
-      )
-        return "Critical";
-      if (alarm.DG_OVERLOAD || alarm.POWER_FLUCTUATION) return "Major";
-      if (alarm.DOOR_ALARM || alarm.HIGH_TEMPERATURE || alarm.SENSOR_FAILURE)
-        return "Minor";
-      return "Unknown";
-    }
+
+   function getSeverity(alarm) {
+  // 🚨 Critical alarms
+     if (
+    alarm.LOW_BATTERY_VOLTAGE ||
+    alarm.FIRE_and_SMOKE ||
+    alarm.EMERGENCY_FAULT ||
+    alarm.ALTERNATOR_FAULT
+  ) {
+    return "Critical";
+  }
+
+  // ⚠️ Major alarms
+     if (
+    alarm.DG_OVERLOAD ||
+    alarm.HIGH_TEMPERATURE ||
+    alarm.DG_FUEL_LEVEL_LOW1 ||
+    alarm.DG_FUEL_LEVEL_LOW2 ||
+    alarm.DG_Failed_to_start ||
+    alarm.LLOP_FAULT ||
+    alarm.DG_Failed_to_stop ||
+    alarm.reserve
+  ) {
+    return "Major";
+  }
+
+  // ℹ️ Minor alarms
+     if (
+    alarm.DOOR_ALARM ||
+    alarm.DG_ON ||
+    alarm.MAINS_FAIL ||
+    alarm.SITE_ON_BATTERY 
+  ) {
+    return "Minor";
+  }
+
+  return "Unknown";
+}
+
 
     function getSeverityDotClass(severity) {
       switch (severity) {

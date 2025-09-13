@@ -7,6 +7,7 @@ from django.contrib import messages
 from .decorators import custom_login_required
 from django.core.paginator import Paginator
 from django.db.models import Max
+from django.db.models import Q
 
 
 from rest_framework.views import APIView
@@ -15,16 +16,35 @@ from .serializers import RmsAlarmCommonSerializer
 
 class RmsAlarmCommonList(APIView):
     def get(self, request, format=None):
-        latest = RmsAlarmCommon.objects.using('third_db').aggregate(
-            latest_date=Max('created_dt')
-        )['latest_date']
+        # OR condition: any alarm must be True
+        alarm_filter = (
+            Q(DOOR_ALARM=True) |
+            Q(MAINS_FAIL=True) |
+            Q(DG_ON=True) |
+            Q(DG_Failed_to_start=True) |
+            Q(DG_FUEL_LEVEL_LOW1=True) |
+            Q(SITE_ON_BATTERY=True) |
+            Q(HIGH_TEMPERATURE=True) |
+            Q(FIRE_and_SMOKE=True) |
+            Q(LOW_BATTERY_VOLTAGE=True) |
+            Q(EMERGENCY_FAULT=True) |
+            Q(LLOP_FAULT=True) |
+            Q(DG_OVERLOAD=True) |
+            Q(DG_FUEL_LEVEL_LOW2=True) |
+            Q(ALTERNATOR_FAULT=True) |
+            Q(DG_Failed_to_stop=True) |
+            Q(reserve=True) 
+        )
 
-        alarms = RmsAlarmCommon.objects.using('third_db').filter(
-            created_dt__date=latest.date()
+        alarms = (
+            RmsAlarmCommon.objects.using('third_db')
+            .filter(alarm_filter)
+            .order_by('-created_dt')[:500]
         )
 
         serializer = RmsAlarmCommonSerializer(alarms, many=True)
         return Response(serializer.data)
+
 
 
 
@@ -63,8 +83,10 @@ def useradmin(request):
         )
         messages.success(request, f"User {name} added successfully!")
         return redirect("useradmin")
+    
+    user_count = LoginTableForRms.objects.exclude(role__iexact="admin").count()
 
-    return render(request, 'useradmin.html')
+    return render(request, 'useradmin.html', {"user_count": user_count})
 
 @custom_login_required
 def energy(request):
