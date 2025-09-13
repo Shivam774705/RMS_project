@@ -1,5 +1,4 @@
-{% extends "base.html" %}
-{% block div_class %}no-sidebar{% endblock %}
+{% extends "base.html" %} {% block div_class %}no-sidebar{% endblock %}
 {% block body %}
 <style>
   :root {
@@ -16,28 +15,23 @@
     --filter-bg-dark: #1e2a4a;
     --filter-text-light: #233344;
     --filter-text-dark: #d5d9e4;
-    --box-shadow-light: 0 2px 8px rgba(22,36,59,0.03);
-    --box-shadow-dark: 0 2px 8px rgba(10,24,48,0.12);
+    --box-shadow-light: 0 2px 8px rgba(22, 36, 59, 0.03);
+    --box-shadow-dark: 0 2px 8px rgba(10, 24, 48, 0.12);
   }
   div.no-sidebar .sidebar {
     display: none !important;
   }
-  div.no-sidebar .main-content {
-    margin-left: 0 !important;
-  }
-  .main-content {
-    transition: margin-left 0.3s, width 0.3s;
-  }
   body {
     transition: background 0.2s;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+      Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+      sans-serif;
   }
   body.dark-mode {
     background: var(--background-dark);
     color: var(--card-text-dark);
   }
-  a{
+  a {
     display: inline-flex;
     align-items: center;
     background-color: transparent;
@@ -54,65 +48,94 @@
   .dark-mode a {
     color: #fff;
   }
-  .alarm-layout {
-    display: flex;
-    min-height: calc(100vh - 56px);
-  }
+
+  /* Base styles for collapsible sidebar */
   .alarm-sidebar {
-    width: var(--sidebar-width);
-    min-width: var(--sidebar-width);
+    position: fixed;
+    left: 0;
+    top: 56px;
+    width: 74px; /* collapsed width */
+    height: calc(100vh - 56px);
     background: var(--card-light);
-    border-right: 1px solid var(--card-border-light);
-    padding: 2rem 1.25rem 2rem 1.5rem;
     color: var(--card-text-light);
-    transition: background 0.2s, color 0.2s;
+    padding: 2rem 0 2rem 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    transition: width 0.3s ease, background 0.2s, color 0.2s;
+    overflow: hidden;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.4);
+    z-index: 100;
   }
   body.dark-mode .alarm-sidebar {
-    background: transparent;
+    background: var(--card-dark);
     color: var(--card-text-dark);
-    border-right: 1px solid var(--card-border-dark);
-    box-shadow: 2px 0 8px rgba(10,24,48,0.18);
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.4);
   }
-  .sidebar-title {
+
+  .alarm-sidebar:hover {
+    width: 270px; /* expanded width */
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.4);
+    overflow: visible;
+  }
+
+  /* Title styling */
+  .alarm-sidebar .sidebar-title {
+    border-bottom: 1px solid #000000ff;
     font-size: 1.17rem;
     font-weight: 700;
+    margin-left: 0.4rem;
+    margin-right: 0.4rem;
     margin-bottom: 1.4rem;
-  }
-  .kpi-entry {
-    font-size: 1.09rem;
-    margin-bottom: 1.2rem;
+    justify-content: center;
     display: flex;
+    overflow: hidden;
+    padding: 0 12px;
+  }
+
+  /* Navigation and KPI Entries as nav items */
+  {% comment %} .alarm-sidebar .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 12px;
+    flex-grow: 1;
+    overflow: visible;
+  } {% endcomment %}
+
+  .alarm-sidebar .kpi-entry {
+    font-size: 1.09rem;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0.4rem 0.5rem;
+    margin: 8px;
     border-radius: 6px;
     transition: background-color 0.2s ease;
+    color: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
   }
-  .kpi-entry:hover {
+
+  .alarm-sidebar .kpi-entry:hover {
     background-color: rgba(0, 123, 255, 0.1);
   }
-  .kpi-entry.active {
-    background-color: rgba(0, 123, 255, 0.2);
+
+  /* Hide label and value text when collapsed */
+  .alarm-sidebar:not(:hover) .nav-item span {
+    display: none;
   }
-  .kpi-label {
-    font-weight: 500;
-    margin-right: 0.6em;
+
+
+  /* Active state styling */
+  .alarm-sidebar .kpi-entry.active {
+    background: linear-gradient(90deg, #8b5cf6 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 7px; 
   }
-  .kpi-value {
-    font-weight: 600;
-    font-size: 1.17rem;
-    margin-left: auto;
-  }
-  .kpi-dot {
-    width: 17px; height: 17px;
-    border-radius: 50%;
-    margin-right: 0.47em;
-    display: inline-block;
-  }
-  .dot-critical { background: #ed4040; }
-  .dot-major   { background: #f9a120; }
-  .dot-minor   { background: #ffd600; }
-  .dot-total   { background: #5e7bfd; }
+
 
   .main-content {
     flex: 1 1 0;
@@ -126,55 +149,83 @@
     background: var(--card-light);
     border-collapse: separate;
     border-spacing: 0;
-    border: 1px solid var(--card-border-light);
+    overflow: hidden;
+    border: 1px solid #2189e5ff;
     border-radius: 12px;
     box-shadow: var(--box-shadow-light);
   }
   body.dark-mode .alarm-table {
     background: var(--card-dark);
-    border: 1px solid var(--card-border-dark);
+    border: 1px solid #3395ecff;
     box-shadow: var(--box-shadow-dark);
     color: var(--card-text-dark);
   }
-  .alarm-table th, .alarm-table td {
+  .alarm-table th,
+  .alarm-table td {
     padding: 12px 16px;
     vertical-align: middle;
-    border-bottom: 1px solid var(--card-border-light);
+    border-bottom: 1px solid #2189e5ff;
   }
-  body.dark-mode .alarm-table th, body.dark-mode .alarm-table td {
-    border-bottom: 1px solid var(--card-border-dark);
+  body.dark-mode .alarm-table th,
+  body.dark-mode .alarm-table td {
+    border-bottom: 1px solid #3395ecff;
   }
   .alarm-table thead th {
     font-weight: 600;
     text-align: left;
+    background-color: #2189e5ff;
+    color: white;
+  }
+  body.dark-mode .alarm-table thead th {
+    background-color: #3395ecff;
+    color: white;
   }
   .alarm-table tbody tr:last-child td {
     border-bottom: none;
   }
-  .alarm-table .dot-critical { background: #ed4040; }
-  .alarm-table .dot-major { background: #f9a120; }
-  .alarm-table .dot-minor { background: #ffd600; }
-  .alarm-table .severity-text { font-weight: 500; }
+  .alarm-table .dot-critical {
+    background: #ed4040;
+  }
+  .alarm-table .dot-major {
+    background: #f9a120;
+  }
+  .alarm-table .dot-minor {
+    background: #ffd600;
+  }
+  .alarm-table .severity-text {
+    font-weight: 500;
+  }
+
+  .main-content {
+    margin-left: 72px; /* same as sidebar width */
+    padding: 24px; /* or use your desired padding */
+    width: calc(100vw - 72px); /* fill remaining width */
+    transition: margin-left 0.3s;
+    min-height: calc(100vh - 56px);
+    /* Overflow as needed */
+  }
+  .alarm-sidebar:hover ~ .main-content {
+    margin-left: 260px;
+    width: calc(100vw - 260px);
+  }
 </style>
 
 <div class="alarm-layout">
-  <aside class="alarm-sidebar">    
-    <div class="sidebar-title">
-      Live Alarm Summary
-    </div>
-    <div class="kpi-entry" data-severity="all">
+  <aside class="alarm-sidebar">
+    <div class="sidebar-title">Live Alarm</div>
+    <div class="kpi-entry" data-severity="all" tabindex="0">
       <span class="kpi-label">Active Alarms</span>
       <span class="kpi-value" id="activeAlarmsCount">0</span>
     </div>
-    <div class="kpi-entry" data-severity="Critical">
-      <span class="kpi-label">Critical Alarms</span>
+    <div class="kpi-entry" data-severity="Critical" tabindex="0">
+      <span class="kpi-label critical">Critical Alarms</span>
       <span class="kpi-value" id="criticalAlarmsCount">0</span>
     </div>
-    <div class="kpi-entry" data-severity="Major">
+    <div class="kpi-entry" data-severity="Major" tabindex="0">
       <span class="kpi-label">Major Alarms</span>
       <span class="kpi-value" id="majorAlarmsCount">0</span>
     </div>
-    <div class="kpi-entry" data-severity="Minor">
+    <div class="kpi-entry" data-severity="Minor" tabindex="0">
       <span class="kpi-label">Minor Alarms</span>
       <span class="kpi-value" id="minorAlarmsCount">0</span>
     </div>
@@ -182,16 +233,29 @@
 
   <section class="main-content">
     <a href="/index">
-      <svg xmlns="http://www.w3.org/2000/svg" 
-           width="18" height="18" fill="none" stroke="currentColor"
-           viewBox="0 0 18 18" style="vertical-align: middle; margin-right: 7px;">
-        <path d="M12 15l-6-6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="18"
+        height="18"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 18 18"
+        style="vertical-align: middle; margin-right: 7px"
+      >
+        <path
+          d="M12 15l-6-6 6-6"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
       </svg>
       Back
     </a>
 
     {% include "filters.html" %}
-    <div style="font-size:1.08rem;font-weight:600;margin-bottom:1.1rem;">Alarm Table (Real-Time Feed)</div>
+    <div style="font-size: 1.08rem; font-weight: 600; margin-bottom: 1.1rem">
+      Alarm Table (Real-Time Feed)
+    </div>
     <div class="table-responsive">
       <table class="alarm-table" id="alarmsTable">
         <thead>
@@ -202,7 +266,6 @@
             <th>Timestamp</th>
             <th>date</th>
             <th>Status</th>
-
           </tr>
         </thead>
         <tbody id="alarmsTableBody">
@@ -214,9 +277,9 @@
 </div>
 
 <script>
-  document.body.classList.add('no-sidebar');
+  document.body.classList.add("no-sidebar");
 
-  document.addEventListener("DOMContentLoaded", function() {
+  document.addEventListener("DOMContentLoaded", function () {
     const kpiEntries = document.querySelectorAll(".kpi-entry");
     const tableBody = document.getElementById("alarmsTableBody");
     const activeCountElem = document.getElementById("activeAlarmsCount");
@@ -239,46 +302,62 @@
     }
 
     function getSeverity(alarm) {
-      if (alarm.MAINS_FAIL || alarm.LOW_BATTERY_VOLTAGE || alarm.DG_Failed_to_start || alarm.COMMUNICATION_LOST) return "Critical";
+      if (
+        alarm.MAINS_FAIL ||
+        alarm.LOW_BATTERY_VOLTAGE ||
+        alarm.DG_Failed_to_start ||
+        alarm.COMMUNICATION_LOST
+      )
+        return "Critical";
       if (alarm.DG_OVERLOAD || alarm.POWER_FLUCTUATION) return "Major";
-      if (alarm.DOOR_ALARM || alarm.HIGH_TEMPERATURE || alarm.SENSOR_FAILURE) return "Minor";
+      if (alarm.DOOR_ALARM || alarm.HIGH_TEMPERATURE || alarm.SENSOR_FAILURE)
+        return "Minor";
       return "Unknown";
     }
 
     function getSeverityDotClass(severity) {
-      switch(severity) {
-        case "Critical": return "dot-critical";
-        case "Major": return "dot-major";
-        case "Minor": return "dot-minor";
-        default: return "";
+      switch (severity) {
+        case "Critical":
+          return "dot-critical";
+        case "Major":
+          return "dot-major";
+        case "Minor":
+          return "dot-minor";
+        default:
+          return "";
       }
     }
 
     function getSeverityColor(severity) {
-      switch(severity) {
-        case "Critical": return "#ed4040";
-        case "Major": return "#f9a120";
-        case "Minor": return "#ffd600";
-        default: return "#000";
+      switch (severity) {
+        case "Critical":
+          return "#ed4040";
+        case "Major":
+          return "#f9a120";
+        case "Minor":
+          return "#ffd600";
+        default:
+          return "#000";
       }
     }
 
     function formatTimestamp(timestamp) {
-  if (!timestamp) return "";
-  const date = new Date(timestamp);
-  return date.toLocaleString([], { 
-    year: 'numeric', 
-    month: '2-digit', 
-    day: '2-digit',
-    hour: '2-digit', 
-    minute: '2-digit'
-  });
-}
-
+      if (!timestamp) return "";
+      const date = new Date(timestamp);
+      return date.toLocaleString([], {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    }
 
     function updateKpiCounts(data) {
-      let critical = 0, major = 0, minor = 0;
-      data.forEach(alarm => {
+      let critical = 0,
+        major = 0,
+        minor = 0;
+      data.forEach((alarm) => {
         const sev = getSeverity(alarm);
         if (sev === "Critical") critical++;
         else if (sev === "Major") major++;
@@ -292,15 +371,17 @@
 
     function renderTable(data) {
       tableBody.innerHTML = "";
-      data.forEach(alarm => {
+      data.forEach((alarm) => {
         const severity = getSeverity(alarm);
         const row = document.createElement("tr");
         row.innerHTML = `
-          <td>${alarm.site_id || ''}</td>
+          <td>${alarm.site_id || ""}</td>
           <td>${getAlarmType(alarm)}</td>
           <td>
             <span class="kpi-dot ${getSeverityDotClass(severity)}"></span>
-            <span class="severity-text" style="color:${getSeverityColor(severity)};">${severity}</span>
+            <span class="severity-text" style="color:${getSeverityColor(
+              severity
+            )};">${severity}</span>
           </td>
           <td>${formatTimestamp(alarm.created_dt)}</td>
           <td>${alarm.status || "Open"}</td>
@@ -312,10 +393,10 @@
 
     function setupKpiFilter() {
       const rows = document.querySelectorAll("#alarmsTableBody tr");
-      kpiEntries.forEach(entry => {
+      kpiEntries.forEach((entry) => {
         entry.addEventListener("click", () => {
           const severity = entry.getAttribute("data-severity");
-          rows.forEach(row => {
+          rows.forEach((row) => {
             const cell = row.querySelector("td:nth-child(3) .severity-text");
             const rowSeverity = cell ? cell.textContent.trim() : "";
             if (severity === "all" || rowSeverity === severity) {
@@ -324,7 +405,7 @@
               row.style.display = "none";
             }
           });
-          kpiEntries.forEach(e => e.classList.remove("active"));
+          kpiEntries.forEach((e) => e.classList.remove("active"));
           entry.classList.add("active");
         });
       });
@@ -333,15 +414,15 @@
     }
 
     // Fetch alarm data from REST API and render
-    fetch('/api/alarms/')
-      .then(response => response.json())
-      .then(data => {
-         const count = data.length;   // ✅ total records
-         console.log("Total alarms:", count);
+    fetch("/api/alarms/")
+      .then((response) => response.json())
+      .then((data) => {
+        const count = data.length; // ✅ total records
+        console.log("Total alarms:", count);
         updateKpiCounts(data);
         renderTable(data);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Error loading alarm data:", error);
       });
   });
