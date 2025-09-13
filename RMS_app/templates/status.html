@@ -1,5 +1,4 @@
-{% extends "base.html" %} {% block div_class %}no-sidebar{% endblock %} 
-{% block body %}
+{% extends "base.html" %} {% block div_class %}no-sidebar{% endblock %} {% block body %}
 
 <style>
   /* ==========================================================
@@ -17,7 +16,7 @@
     --card-border-light: #e4e8ef;
     --card-border-dark: #334155; /* Darker border */
     --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.1);
-    --shadow-dark: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-dark: 2px 0 12px rgba(0, 0, 0, 0.4);
   }
 
   /* Hide sidebar when no-sidebar class present */
@@ -26,13 +25,13 @@
   }
   div.no-sidebar .main-content {
     margin-left: 0 !important;
+    display: flex;
   }
-  a{
+  a {
     display: inline-flex;
     align-items: center;
     background-color: transparent;
     color: #141f34;
-    margin-top:1rem;
     margin-bottom: 1rem;
     border: none;
     font-size: 1rem;
@@ -46,6 +45,102 @@
   .dark-mode a {
     color: #fff;
   }
+/* Base styles for collapsible sidebar */
+.alarm-sidebar {
+  position: fixed;
+  left: 0;
+  top: 56px;
+  width: 72px;  /* collapsed width */
+  height: calc(100vh - 56px);
+  background: var(--card-light);
+  color: var(--card-text-light);
+  padding: 2rem 0 2rem 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease, background 0.2s, color 0.2s;
+  overflow: hidden;
+  box-shadow: var(--shadow-light);
+  z-index: 100;
+}
+body.dark-mode .alarm-sidebar {
+  background: var(--card-dark);
+  color: var(--card-text-dark);
+  box-shadow: var(--shadow-dark);
+}
+
+.alarm-sidebar:hover {
+  width: 270px; /* expanded width */
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.4);
+  overflow: visible;
+}
+
+/* Title styling */
+.alarm-sidebar .sidebar-title {
+  font-size: 1.17rem;
+  font-weight: 700;
+  margin-bottom: 1.4rem;
+  justify-content: center;
+  display: flex;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 0 12px;
+}
+
+/* Navigation and KPI Entries as nav items */
+.alarm-sidebar .sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 12px;
+  flex-grow: 1;
+  overflow: visible;
+}
+
+.alarm-sidebar .nav-item {
+  font-size: 1.09rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+  color: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.alarm-sidebar .nav-item:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+/* Hide label and value text when collapsed */
+.alarm-sidebar:not(:hover) .nav-item span {
+  display: none;
+}
+
+/* Show label and value on hover */
+.alarm-sidebar:hover .nav-item span {
+  display: inline;
+}
+
+/* Adjust padding and alignment when collapsed */
+.alarm-sidebar:not(:hover) .nav-item {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Active state styling */
+.alarm-sidebar .nav-item.active {
+  background: linear-gradient(90deg, #8b5cf6 0%, #3b82f6 100%);
+  color: #fff;
+}
+
+/* Optionally add footer or other elements as needed */
+
 
   /* === Main Content & Body Styles === */
   .main-content {
@@ -249,9 +344,50 @@
       gap: 1rem;
     }
   }
+  .container-fluid {
+    margin-left: 72px; /* same as sidebar width */
+    padding: 24px; /* or use your desired padding */
+    width: calc(100vw - 72px); /* fill remaining width */
+    transition: margin-left 0.3s;
+    min-height: calc(100vh - 56px);
+    /* Overflow as needed */
+  }
+  .alarm-sidebar:hover ~ .container-fluid {
+    margin-left: 260px;
+    width: calc(100vw - 260px);
+  }
 </style>
 
 <main class="main-content">
+<div class=" alarm-sidebar">
+  <div class="sidebar-title">Site Status</div>
+  <nav class="sidebar-nav">
+    <a class="nav-item" href="#" data-severity="all">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0; margin-right: 8px;">
+        <circle cx="12" cy="12" r="10" stroke-width="2"/>
+      </svg>
+      <span class="kpi-label">Total</span>
+      <span class="kpi-value" id="totalAlarmsCount">0</span>
+    </a>
+    <a class="nav-item" href="#" data-severity="all">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0; margin-right: 8px;">
+        <path d="M5 13l4 4L19 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="kpi-label">Active</span>
+      <span class="kpi-value" id="activeAlarmsCount">0</span>
+    </a>
+    <a class="nav-item" href="#" data-severity="all">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0; margin-right: 8px;">
+        <line x1="18" y1="6" x2="6" y2="18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="6" y1="6" x2="18" y2="18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="kpi-label">Non Active</span>
+      <span class="kpi-value" id="nonActiveAlarmsCount">0</span>
+    </a>
+  </nav>
+</div>
+
+
   <div class="container-fluid">
     <!--<h4 class="mb-4">Site Status Search</h4>-->
 
@@ -299,7 +435,7 @@
     <!--    </div>-->
     <!--</form>-->
 
-        <a href="/index">
+    <a href="/index">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="18"
