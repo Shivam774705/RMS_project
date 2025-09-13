@@ -45,10 +45,21 @@
     border-radius: 6px;
     cursor: pointer;
   }
+
+  .div-admin {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
 </style>
 
 <main class="main-content container-fluid">
-  <h2 class="mb-4">Admin Panel</h2>
+  <div class="div-admin">
+   <h2 class="mb-4">Admin Panel </h2> 
+   <h4><button>Total Users : {{ user_count }}</button></h4>
+  </div>
+
   <p>Manage users, system settings, and permissions.</p>
 
   <div class="card">
