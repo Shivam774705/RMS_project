@@ -8,6 +8,7 @@ from .decorators import custom_login_required
 from django.core.paginator import Paginator
 from django.db.models import Max
 from django.db.models import Q
+from . import views
 
 
 from rest_framework.views import APIView
@@ -70,7 +71,7 @@ def battery(request):
 @custom_login_required
 def useradmin(request):
     if request.method == "POST":
-        name = request.POST.get("name")
+        name = request.POST.get("name") 
         username = request.POST.get("username")
         password = request.POST.get("password")
         role = request.POST.get("role")
@@ -78,15 +79,37 @@ def useradmin(request):
         LoginTableForRms.objects.create(
             name=name,
             user_name=username,
-            password=password,   
+            password=password,
             role=role
         )
         messages.success(request, f"User {name} added successfully!")
-        return redirect("useradmin")
-    
-    user_count = LoginTableForRms.objects.exclude(role__iexact="admin").count()
+        return redirect("useradmin") 
 
-    return render(request, 'useradmin.html', {"user_count": user_count})
+    # Define roles (inside the function)
+    roles = {
+        "Admin": "Admin",
+        "SOC_operator": "SOC operator",
+        "Technician": "Technician",
+        "Management": "Management",
+        "Circle": "Circle Manager"
+    }
+
+    # Count users per role
+    role_counts = {}
+    for key, value in roles.items():
+        role_counts[key] = LoginTableForRms.objects.filter(role__iexact=value).count()
+    
+    print("Role counts:", role_counts)
+    # Get all users
+    all_users = LoginTableForRms.objects.all()
+
+    context = {
+        "role_counts": role_counts,
+        "all_users": all_users
+    }
+    return render(request, "useradmin.html", context)
+
+
 
 @custom_login_required
 def energy(request):
@@ -134,15 +157,22 @@ def login(request):
     return render(request, 'login.html')
 
 
-@custom_login_required   
+# ==========================
+# FILTER PAGE
+# ==========================
+def get_all_states(using_db='third_db'):
+    return TpmsStateMaster.objects.using(using_db).all().order_by('state_name')
+
+
 def filters(request):
-    state_data = TpmsStateMaster.objects.using('third_db').all.order_by('state_name')
-    print(state_data)
+    state_data = get_all_states('third_db')
+    print("States in filters:", state_data)
     return render(request, 'filters.html', {'state_data': state_data})
 
-@custom_login_required
+
 def live_alarms(request):
     # Find the latest date
+    state_data_from_filters = get_all_states('third_db')    
     latest = RmsAlarmCommon.objects.using('third_db').aggregate(
         latest_date=Max('created_dt')
     )['latest_date']
@@ -152,7 +182,7 @@ def live_alarms(request):
         created_dt__date=latest.date()
     )
 
-    state_data = TpmsStateMaster.objects.using('third_db').all().order_by('state_name')
+    state_data = get_all_states('second_db')
 
     context = {
         'alarms': alarms,
@@ -236,36 +266,30 @@ def rovo_call(request):
     return render (request, "rovo_call.html")
     
     
+# ==========================
+# AJAX: Get districts based on state
+# ==========================
 @csrf_exempt
 def get_districts_for_filter(request, state_id):
-   
-
     if state_id and state_id != "All":
         districts = TpmsDistrictMaster.objects.using('third_db').filter(state_id=state_id)
-        district_options = [{'id': district.dist_id, 'name': district.district_name} for district in districts]
-         
+        district_options = [{'id': d.dist_id, 'name': d.district_name} for d in districts]
     else:
         district_options = []
-
     return JsonResponse({'districts': district_options})
 
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+# ==========================
+# AJAX: Get clusters based on district
+# ==========================
 @csrf_exempt
 def get_clusters_for_filter(request, dist_id):
-    
     try:
         if dist_id and dist_id != "All":
             clusters = TpmsClusterMaster.objects.using('third_db').filter(dist_id=dist_id)
-            # Use cluster_id, not dist_id for the ID field
-            cluster_options = [{'id': cluster.cluster_id, 'name': cluster.cluster_name} for cluster in clusters]
-            
+            cluster_options = [{'id': c.cluster_id, 'name': c.cluster_name} for c in clusters]
         else:
             cluster_options = []
         return JsonResponse({'clusters': cluster_options}, safe=False)
     except Exception as e:
         print("Error in get_clusters_report_total:", str(e))
         return JsonResponse({'error': str(e)}, status=500)
-    
-
-
