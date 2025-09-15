@@ -27,30 +27,14 @@
     background: var(--background-dark);
     color: var(--card-text-dark);
   }
-  .filter-group.alarm-type {
-    display: none !important;
-  }
-  .filter-group.site-type {
-    display: none !important;
-  }
-  .filter-group.global-no {
-    display: none !important;
-  }
-  .filter-group.site-name {
-    display: none !important;
-  }
-  .filter-group.export {
-    display: none !important;
-  }
-  .filter-group.imei-no {
-    display: none !important;
-  }
-   .filter-group.enter_days {
-    display: none !important;
-  }
-    .filter-group.pdf {
-    display: none !important;
-  }
+  .filter-group.alarm-type,
+  .filter-group.site-type,
+  .filter-group.global-no,
+  .filter-group.site-name,
+  .filter-group.export,
+  .filter-group.imei-no,
+  .filter-group.enter_days,
+  .filter-group.pdf,
   .filter-group.date-range {
     display: none !important;
   }
@@ -72,28 +56,39 @@
   /* Filter Bar */
   .filter-bar {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center; /* center horizontally */
+    align-items: flex-start;
     background: var(--filter-bg-light);
     border-radius: 12px;
-    padding: 16px 24px;
-    display: flex;
-    flex-wrap: wrap;
+    padding: 16px 24px 64px 24px; /* extra bottom padding for buttons */
     gap: 24px;
     box-shadow: var(--box-shadow-light);
-    border: 1px solid var(--card-border-light);
+    border: 1px solid #2189e5ff;
     margin-bottom: 24px;
+    position: relative; /* for absolute button group */
     transition: background 0.3s, color 0.3s, border-color 0.3s;
+    min-height: 130px; /* adjust as needed */
   }
   body.dark-mode .filter-bar {
     background: var(--filter-bg-dark);
-    border-color: var(--card-border-dark);
+    border-color: #2189e5ff;
     box-shadow: var(--box-shadow-dark);
     color: var(--filter-text-dark);
   }
-  .btn-search,
-  .btn-reset {
-    margin-top: 23px;
+
+  /* Button group inside filter-bar, bottom center */
+  .filter-bar .button-group {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 16px;
+  }
+  .filter-bar .btn-search,
+  .filter-bar .btn-reset {
+    margin: 0;
     cursor: pointer;
     border: none;
     font-weight: 600;
@@ -106,52 +101,56 @@
     transition: transform 0.18s cubic-bezier(0.36, 1.43, 0.44, 1.01),
       box-shadow 0.18s cubic-bezier(0.36, 1.43, 0.44, 1.01);
 
-    /* 3D gradient overlay for depth */
+    /* 3D gradient overlay */
     background-image: linear-gradient(
       120deg,
-      rgba(255, 255, 255, 0.14) 0%,
-      rgba(255, 255, 255, 0.02) 94%
+      rgba(0, 64, 255, 0.4) 0%,
+      rgba(0, 208, 255, 0.2) 94%
     );
   }
-
-  .btn-search:active,
-  .btn-reset:active {
+  .filter-bar .btn-search:active,
+  .filter-bar .btn-reset:active {
     transform: translateY(2px) scale(0.98);
     box-shadow: 0 2px 7px rgba(22, 36, 59, 0.09),
       0 1px 4px rgba(22, 36, 59, 0.08);
   }
-
-  .btn-search:hover,
-  .btn-reset:hover {
+  .filter-bar .btn-search:hover,
+  .filter-bar .btn-reset:hover {
     box-shadow: 0 6px 24px rgba(160, 160, 160, 0.18),
       0 3px 8px rgba(204, 204, 204, 0.1);
     filter: brightness(1.06);
     outline: none;
   }
-
-  .btn-search:focus,
-  .btn-reset:focus {
+  .filter-bar .btn-search:focus,
+  .filter-bar .btn-reset:focus {
     box-shadow: 0 0 0 2px #8b5cf6, 0 4px 18px rgba(22, 36, 59, 0.12);
   }
 
   .filter-group {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     max-width: 180px;
+    margin-right: 20px;
     min-width: 180px;
     flex-grow: 1;
   }
   .filter-label {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 1rem;
+    margin-right: 8px;
     color: inherit;
   }
   .filter-select,
   .filter-input {
+    flex: 1;
     border-radius: 8px;
     border: 1px solid var(--card-border-light);
-    padding: 8px 12px;
+    padding: 3px 5px;
     font-size: 1rem;
+    min-width: 130px;
     color: var(--filter-text-light);
     background: var(--card-light);
     transition: background 0.3s, color 0.3s, border-color 0.3s;
@@ -174,6 +173,8 @@
     .filter-bar {
       flex-direction: column;
       gap: 16px;
+      min-height: auto;
+      padding-bottom: 80px;
     }
     main.dashboard-content {
       padding: 12px;
@@ -184,30 +185,43 @@
       width: 100vw;
     }
   }
+  @media (max-width: 600px) {
+    .filter-bar .button-group {
+      flex-direction: column;
+      bottom: 16px;
+      gap: 12px;
+      width: 100%;
+      left: 0;
+      transform: none;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
   .date-time {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 16px; /* spacing between label-input pairs */
-  flex-wrap: nowrap; /* prevent wrapping */
-}
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px; /* spacing between label-input pairs */
+    flex-wrap: nowrap; /* prevent wrapping */
+  }
 
-.date-time label {
-  margin-bottom: 0;
-  white-space: nowrap;
-}
+  .date-time label {
+    margin-bottom: 0;
+    white-space: nowrap;
+  }
 
-.date-time input {
-  min-width: 180px;
-}
+  .date-time input {
+    min-width: 180px;
+  }
 </style>
 
 <main class="dashboard-content">
   <!-- Filter Bar -->
   <div class="filter-bar" role="region" action="{% url 'status' %}" method="get" aria-label="Filter Alarms">
 
-    <div class="filter-group">      
-      <label for="filter-circle" class="filter-label">Circle</label>
+    <div class="filter-group">
+      <label for="filter-circle" class="filter-label">Circle:</label>
       <select
         id="filter-circle"
         class="filter-select"
@@ -221,21 +235,21 @@
     </div>
 
     <div class="filter-group">
-      <label for="cluster" class="filter-label">Cluster</label>
+      <label for="cluster" class="filter-label">Cluster:</label>
       <select
         id="cluster"
         class="filter-select"
         name="cluster"
       >
         <option value="">All</option>
-            {% for c in clusters %}
-            <option value="{{ c.cluster }}" {% if c.cluster == current_cluster %}selected{% endif %}>{{ c.cluster }}</option>
-            {% endfor %}
+          {% for c in clusters %}
+          <option value="{{ c.cluster }}" {% if c.cluster == current_cluster %}selected{% endif %}>{{ c.cluster }}</option>
+          {% endfor %}
       </select>
     </div>
 
     <div class="filter-group">
-      <label for="filter-site-type" class="filter-label">Site Type</label>
+      <label for="filter-site-type" class="filter-label">Site Type:</label>
       <select
         id="filter-site-type"
         class="filter-select"
@@ -248,7 +262,7 @@
       </select>
     </div>
     <div class="filter-group {% if hide_alarm_type %}alarm-type{% endif %}">
-      <label for="filter-alarm-type" class="filter-label">Alarm Type</label>
+      <label for="filter-alarm-type" class="filter-label">Alarm Type:</label>
       <select
         id="filter-alarm-type"
         class="filter-select"
@@ -261,7 +275,7 @@
       </select>
     </div>
     <div class="filter-group {% if hide_site_name %}site-name{% endif %}">
-      <label for="filter-site-name" class="filter-label">Site Name</label>
+      <label for="filter-site-name" class="filter-label">Site Name:</label>
       <input
         type="text"
         placeholder="Enter Site Name"
@@ -271,7 +285,7 @@
       />
     </div>
     <div class="filter-group {% if hide_global_no %}global-no{% endif %}">
-      <label for="filter-global-no" class="filter-label">Global No</label>
+      <label for="filter-global-no" class="filter-label">Global No:</label>
       <input
         type="text"
         placeholder="Enter Global No"
@@ -281,7 +295,7 @@
       />
     </div>
     <div class="filter-group" >
-      <label for="filter-site-id" class="filter-label">Site ID (Search)</label>
+      <label for="filter-site-id" class="filter-label">Site ID:</label>
       <input
         id="filter-site-id"
         class="filter-input"
@@ -291,7 +305,7 @@
       />
     </div>
         <div class="filter-group {% if hide_enter_days %}enter_days{% endif %}">
-      <label for="filter-global-no" class="filter-label">Enter Days</label>
+      <label for="filter-global-no" class="filter-label">Enter Days:</label>
       <input
         type="text"
         placeholder="Enter Days"
@@ -301,7 +315,7 @@
       />
     </div>
     <div class="filter-group {% if hide_imei_no %}imei-no{% endif %}" >
-      <label for="filter-site-id" class="filter-label">IMEI No (Search)</label>
+      <label for="filter-site-id" class="filter-label">IMEI No:</label>
       <input
         id="filter-site-id"
         class="filter-input"
@@ -311,24 +325,18 @@
       />
     </div>
     <div class="filter-group {% if hide_date %}date-range{% endif %}">
-      <label for="filter-from" class="filter-label">Date Range</label>
+      <label for="filter-from" class="filter-label">Date Range:</label>
       <div class=" date-time">
       <label for="filter-from" class="filter-label">From:</label>
       <input type="datetime-local" id="filter-from" class="filter-input" name="from_date" disabled />
       <label for="filter-to" class="filter-label">To:</label>
       <input type="datetime-local" id="filter-to" class="filter-input" name="to_date" disabled />
-      </div>      
+      </div>       
     </div>
-    {% comment %} <div class="filter-group {% if hide_export %}export{% endif %}">
-      <button type="submit" class="filter-input btn-search">Export to CSV</button>
-    </div>
-    <div class="filter-group {% if hide_pdf %}pdf{% endif %}">
-      <button type="submit" class="filter-input btn-search">Export to PDF</button>
-    </div> {% endcomment %}
-    <div class="filter-group">
+
+    <!-- Buttons inside the filter bar box, fixed at bottom center of this box -->
+    <div class="button-group" role="group" aria-label="Search and reset filter actions">
       <button type="submit" class="filter-input btn-search">Search</button>
-    </div>
-    <div class="filter-group">
       <button type="reset" class="filter-input btn-reset">Reset</button>
     </div>
   </div>
@@ -392,4 +400,3 @@
     }
   });
 </script>
-
