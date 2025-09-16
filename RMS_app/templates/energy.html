@@ -1,16 +1,50 @@
 {% extends "base.html" %}
 {% block body %}
 <style>
-  /* Reuse or customize the styles similar to your dashboard */
+    :root {
+    --background-light: #eef3f7;
+    --background-dark: linear-gradient(180deg, #141f34 0%, #101c2c 100%);
+    --card-light: #fff;
+    --card-dark: #141f34;
+    --card-text-light: #233344;
+    --card-text-dark: #d5d9e4;
+    --card-border-light: #e4e8ef;
+    --card-border-dark: #364665;
+    --box-shadow-light: 0 2px 8px rgba(22, 36, 59, 0.03);
+    --box-shadow-dark: 0 2px 8px rgba(10, 24, 48, 0.12);
+    --chart-box-light: #fff;
+    --chart-box-dark: #18243a;
+    --chart-border-light: #e4e8ef;
+    --chart-border-dark: #364665;
+    --chart-shadow-light: 0 1px 4px rgba(33, 51, 68, 0.04);
+    --chart-shadow-dark: 0 1px 4px rgba(10, 24, 48, 0.14);
+  }
+
+  body {
+    background: var(--background-light);
+    transition: background 0.2s;
+  }
+  body.dark-mode {
+    background: var(--background-dark);
+  }
+  
   .main-content {
-    margin-top: 56px;
-    margin-left: 220px;
-    padding-top: 24px;
-    padding-bottom: 56px;
-    min-height: 100vh;
-    overflow-y: auto;
-    background: #f8f9fa;
-    color: #212529;
+    margin-left: 72px; /* same as sidebar width */
+    margin-top: 56px; /* below top-bar */
+    padding: 24px; /* or use your desired padding */
+    width: calc(100vw - 72px); /* fill remaining width */
+    transition: margin-left 0.3s;
+    min-height: calc(100vh - 56px);
+    background: #eef3f7;
+    /* Overflow as needed */
+  }
+  .sidebar:hover ~ .main-content {
+    margin-left: 260px;
+    width: calc(100vw - 260px);
+  }
+  body.dark-mode .main-content {
+    color: var(--card-text-dark);
+    background: var(--background-dark);
   }
   .card {
     min-height: 120px;
@@ -22,6 +56,15 @@
     box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
     color: #212529;
   }
+    body.dark-mode .card {
+    background: var(--card-dark);
+    color: var(--card-text-dark);
+    border: 1px solid var(--card-border-dark);
+    box-shadow: var(--box-shadow-dark);
+  }
+  .dark-mode h2, .dark-mode h5 {
+    color: #f1f3f5;
+  }
   .chart-box {
     background: #ffffff;
     border-radius: 12px;
@@ -29,15 +72,17 @@
     margin-bottom: 24px;
     box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
   }
+  body.dark-mode .chart-box {
+    background: var(--chart-box-dark);
+    border: 1px solid var(--chart-border-dark);
+    box-shadow: var(--chart-shadow-dark);
+    color: var(--card-text-dark);
+  }
   h2, h5 { color: #343a40; }
-  p { color: #495057; }
 </style>
 
 <main class="main-content container-fluid p-4">
   <h2 class="mb-4">Energy Dashboard</h2>
-  <p>
-    Overview of energy generation, consumption, and efficiency metrics to monitor and optimize energy usage.
-  </p>
 
   <div class="row mb-4">
     <div class="col-md-3 mb-3"><div class="card text-center">Total Energy Generated</div></div>
