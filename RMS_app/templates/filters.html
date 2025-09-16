@@ -123,126 +123,36 @@
 
   .filter-group {
     display: flex;
-    flex-direction: row;
-    max-width: 180px;
-    margin-right: 20px;
+    flex-direction: column;
     min-width: 180px;
     flex-grow: 1;
+    max-width: 220px;
   }
   .filter-label {
-    display: flex;
-    align-items: center;
-    white-space: nowrap;
     font-weight: 600;
-    font-size: 1rem;
-    margin-right: 8px;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
     color: inherit;
   }
 
-  .filter-input {
-    flex: 1;
+  .filter-select, .filter-input {
     border-radius: 8px;
     border: 1px solid var(--card-border-light);
-    padding: 3px 5px;
+    padding: 8px 12px;
     font-size: 1rem;
-    min-width: 130px;
     color: var(--filter-text-light);
     background: var(--card-light);
     transition: background 0.3s, color 0.3s, border-color 0.3s;
   }
-  body.dark-mode .filter-input {
+  body.dark-mode .filter-select, body.dark-mode .filter-input {
     background: var(--card-dark);
     border-color: var(--card-border-dark);
     color: var(--filter-text-dark);
   }
-  .filter-input:focus {
+  .filter-select:focus, .filter-input:focus {
     outline: none;
     border-color: #8b5cf6;
     box-shadow: 0 0 0 2px #8b5cf6;
-  }
-
-  /* Custom combobox input replacing .custom-select */
-  .custom-select-wrapper {
-    position: relative; /* Added to position dropdown relative */
-    width: 100%;  /* Make wrapper width 100% of filter-group */
-  }
-  .custom-combobox {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 6px 10px;
-    border-radius: 8px;
-    border: 1px solid var(--card-border-light);
-    font-size: 1rem;
-    color: var(--filter-text-light);
-    background: var(--card-light);
-    cursor: text;
-  }
-  body.dark-mode .custom-combobox {
-    background: var(--card-dark);
-    border-color: var(--card-border-dark);
-    color: var(--card-text-dark);
-  }
-  .custom-combobox:focus {
-    outline: none;
-    border-color: #8b5cf6;
-    box-shadow: 0 0 0 2px #8b5cf6;
-  }
-
-  /* Dropdown options below input */
-  .custom-options {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    width: 100%; /* Make dropdown width same as wrapper */
-    max-height: 200px;
-    overflow-y: auto;
-    background: var(--card-light);
-    border: 1px solid #2189e5ff;
-    border-radius: 0 0 8px 8px;
-    box-shadow: 0 2px 8px rgba(22, 36, 59, 0.12);
-    z-index: 1000;
-  }
-  body.dark-mode .custom-options {
-    background: var(--card-dark);
-    border-color: #2189e5ff;
-    box-shadow: 0 2px 8px rgba(10, 24, 48, 0.12);
-  }
-  .custom-option {
-    padding: 6px 10px;
-    cursor: pointer;
-    white-space: nowrap;
-  }
-  .custom-option:hover,
-  .custom-option[aria-selected="true"] {
-    background: #0b63ff22;
-  }
-
-  /* Scrollbar styling */
-  .custom-options::-webkit-scrollbar {
-    width: 8px;
-  }
-  .custom-options::-webkit-scrollbar-track {
-    background: transparent;
-    border-radius: 8px;
-  }
-  .custom-options::-webkit-scrollbar-thumb {
-    background-color: #2189e5ff;
-    border-radius: 8px;
-    border: 2px solid transparent;
-    background-clip: content-box;
-    transition: background-color 0.3s;
-  }
-  .custom-options::-webkit-scrollbar-thumb:hover {
-    background-color: #005bb5ff;
-  }
-  .custom-options {
-    scrollbar-width: thin;
-    scrollbar-color: #2189e5ff transparent;
-  }
-  .custom-options:hover {
-    scrollbar-color: #005bb5ff transparent;
   }
 
   @media (max-width: 900px) {
@@ -273,144 +183,95 @@
       align-items: center;
     }
   }
-  .date-time {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: nowrap;
-  }
-  .date-time label {
-    margin-bottom: 0;
-    white-space: nowrap;
-  }
-  .date-time input {
-    min-width: 180px;
-  }
 </style>
 
 <main class="dashboard-content">
-  <div class="filter-bar" role="region" aria-label="Filter Alarms">
+  <div class="filter-bar" role="region" aria-label="Filter Robotic Calls">
 
+    <!-- State Filter -->
+    <!-- State Filter -->
+<div class="filter-group">
+  <label for="filter-state" class="filter-label">State:</label>
+  <select id="filter-state" class="filter-select" aria-controls="roboticCallsTable">
+    <option value="">All</option>
+    {% for state in state_data %}
+      <option value="{{ state.state_id }}">{{ state.state_name }}</option>
+    {% endfor %}
+  </select>
+</div>
+
+<!-- District Filter -->
+<div class="filter-group">
+  <label for="filter-district" class="filter-label">District:</label>
+  <select id="filter-district" class="filter-select" aria-controls="roboticCallsTable">
+    <option value="">Select a state first</option>
+  </select>
+</div>
+
+<!-- Cluster Filter -->
+<div class="filter-group">
+  <label for="filter-cluster" class="filter-label">Cluster:</label>
+  <select id="filter-cluster" class="filter-select" aria-controls="roboticCallsTable">
+    <option value="">Select a district first</option>
+  </select>
+</div>
+
+    <!-- Site Type Filter -->
     <div class="filter-group">
-      <label class="filter-label" for="filter-circle-input">Circle:</label>
-      <div class="custom-select-wrapper" id="filter-circle-wrapper" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-owns="filter-circle-list">
-        <input type="text" id="filter-circle-input" class="custom-combobox" aria-autocomplete="list" aria-controls="filter-circle-list" aria-activedescendant="" autocomplete="off" placeholder="All" />
-        <div class="custom-options" id="filter-circle-list" role="listbox" tabindex="-1">
-          <div class="custom-option" role="option" data-value="All" id="filter-circle-option-all">All</div>
-          <div class="custom-option" role="option" data-value="Mumbai" id="filter-circle-option-mumbai">Mumbai</div>
-          <div class="custom-option" role="option" data-value="South" id="filter-circle-option-south">South</div>
-          <div class="custom-option" role="option" data-value="North" id="filter-circle-option-north">North</div>
-        </div>
-      </div>
-      <input type="hidden" name="circle" id="filter-circle" />
+      <label for="filter-site-type" class="filter-label">Site Type:</label>
+      <select id="filter-site-type" class="filter-select" aria-controls="roboticCallsTable">
+        <option value="">All</option>
+        <option value="Type A">Type A</option>
+        <option value="Type B">Type B</option>
+        <option value="Type C">Type C</option>
+      </select>
     </div>
 
-    <div class="filter-group">
-      <label class="filter-label" for="filter-cluster-input">Cluster:</label>
-      <div class="custom-select-wrapper" id="filter-cluster-wrapper" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-owns="filter-cluster-list">
-        <input type="text" id="filter-cluster-input" class="custom-combobox" aria-autocomplete="list" aria-controls="filter-cluster-list" aria-activedescendant="" autocomplete="off" placeholder="All" />
-        <div class="custom-options" id="filter-cluster-list" role="listbox" tabindex="-1">
-          <div class="custom-option" role="option" data-value="" id="filter-cluster-option-all">All</div>
-          {% for c in clusters %}
-          <div class="custom-option" role="option" data-value="{{ c.cluster }}" id="filter-cluster-option-{{ c.cluster|slugify }}">{{ c.cluster }}</div>
-          {% endfor %}
-        </div>
-      </div>
-      <input type="hidden" name="cluster" id="cluster" />
-    </div>
-
-    <div class="filter-group">
-      <label class="filter-label" for="filter-site-type-input">Site Type:</label>
-      <div class="custom-select-wrapper" id="filter-site-type-wrapper" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-owns="filter-site-type-list">
-        <input type="text" id="filter-site-type-input" class="custom-combobox" aria-autocomplete="list" aria-controls="filter-site-type-list" aria-activedescendant="" autocomplete="off" placeholder="All" />
-        <div class="custom-options" id="filter-site-type-list" role="listbox" tabindex="-1">
-          <div class="custom-option" role="option" data-value="All" id="filter-site-type-option-all">All</div>
-          <div class="custom-option" role="option" data-value="Type A" id="filter-site-type-option-a">Type A</div>
-          <div class="custom-option" role="option" data-value="Type B" id="filter-site-type-option-b">Type B</div>
-          <div class="custom-option" role="option" data-value="Type C" id="filter-site-type-option-c">Type C</div>
-        </div>
-      </div>
-      <input type="hidden" name="site_type" id="filter-site-type" />
-    </div>
-
-    <div class="filter-group {% if hide_alarm_type %}alarm-type{% endif %}">
-      <label class="filter-label" for="filter-alarm-type-input">Alarm Type:</label>
-      <div class="custom-select-wrapper" id="filter-alarm-type-wrapper" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-owns="filter-alarm-type-list">
-        <input type="text" id="filter-alarm-type-input" class="custom-combobox" aria-autocomplete="list" aria-controls="filter-alarm-type-list" aria-activedescendant="" autocomplete="off" placeholder="All" />
-        <div class="custom-options" id="filter-alarm-type-list" role="listbox" tabindex="-1">
-          <div class="custom-option" role="option" data-value="All" id="filter-alarm-type-option-all">All</div>
-          <div class="custom-option" role="option" data-value="Mains Fail" id="filter-alarm-type-option-mains">Mains Fail</div>
-          <div class="custom-option" role="option" data-value="DG Fail" id="filter-alarm-type-option-dg">DG Fail</div>
-          <div class="custom-option" role="option" data-value="Door Open" id="filter-alarm-type-option-door">Door Open</div>
-        </div>
-      </div>
-      <input type="hidden" name="alarm_type" id="filter-alarm-type" />
-    </div>
-
-    <div class="filter-group {% if hide_site_name %}site-name{% endif %}">
-      <label for="filter-site-name" class="filter-label">Site Name:</label>
-      <input
-        type="text"
-        placeholder="Enter Site Name"
-        id="filter-site-name"
-        class="filter-input"
-        name="site_name"
-      />
-    </div>
-
-    <div class="filter-group {% if hide_global_no %}global-no{% endif %}">
-      <label for="filter-global-no" class="filter-label">Global No:</label>
-      <input
-        type="text"
-        placeholder="Enter Global No"
-        id="filter-global-no"
-        class="filter-input"
-        aria-controls="alarmsTable"
-      />
-    </div>
-
+    <!-- Site ID Filter -->
     <div class="filter-group">
       <label for="filter-site-id" class="filter-label">Site ID:</label>
       <input
         id="filter-site-id"
         class="filter-input"
         type="text"
-        aria-controls="alarmsTable"
+        aria-controls="roboticCallsTable"
         placeholder="Enter Site ID..."
       />
     </div>
 
-    <div class="filter-group {% if hide_enter_days %}enter_days{% endif %}">
-      <label for="filter-enter-days" class="filter-label">Enter Days:</label>
+    <!-- IMEI Filter -->
+    <div class="filter-group">
+      <label for="filter-imei" class="filter-label">IMEI:</label>
       <input
-        type="text"
-        placeholder="Enter Days"
-        id="filter-enter-days"
+        id="filter-imei"
         class="filter-input"
-        aria-controls="alarmsTable"
+        type="text"
+        aria-controls="roboticCallsTable"
+        placeholder="Enter IMEI..."
       />
     </div>
 
-    <div class="filter-group {% if hide_imei_no %}imei-no{% endif %}">
-      <label for="filter-imei-no" class="filter-label">IMEI No:</label>
-      <input
-        id="filter-imei-no"
-        class="filter-input"
-        type="text"
-        aria-controls="alarmsTable"
-        placeholder="Enter IMEI No..."
-      />
+        <!-- Call Status Filter -->
+        <!--<div class="filter-group">-->
+        <!--  <label for="filter-call-status" class="filter-label">Call Status:</label>-->
+        <!--  <select id="filter-call-status" class="filter-select" aria-controls="roboticCallsTable">-->
+        <!--    <option value="">All</option>-->
+        <!--    <option value="SUCCESS">Success</option>-->
+        <!--    <option value="FAILED">Failed</option>-->
+        <!--    <option value="NO_ANSWER">No Answer</option>-->
+        <!--    <option value="BUSY">Busy</option>-->
+        <!--  </select>-->
+        <!--</div>-->
+
+    <!-- Date Range Filter -->
+    <div class="filter-group">
+      <label for="filter-date-from" class="filter-label">From Date:</label>
+      <input id="filter-date-from" class="filter-input" type="date" aria-controls="roboticCallsTable" />
     </div>
 
-    <div class="filter-group {% if hide_date %}date-range{% endif %}">
-      <label for="filter-from" class="filter-label">Date Range:</label>
-      <div class="date-time">
-        <label for="filter-from" class="filter-label">From:</label>
-        <input type="datetime-local" id="filter-from" class="filter-input" name="from_date" disabled />
-        <label for="filter-to" class="filter-label">To:</label>
-        <input type="datetime-local" id="filter-to" class="filter-input" name="to_date" disabled />
-      </div>
+    <div class="filter-group">
+      <label for="filter-date-to" class="filter-label">To Date:</label>
+      <input id="filter-date-to" class="filter-input" type="date" aria-controls="roboticCallsTable" />
     </div>
 
     <div class="button-group" role="group" aria-label="Search and reset filter actions">
@@ -421,181 +282,137 @@
 </main>
 
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const customSelectWraps = document.querySelectorAll(".custom-select-wrapper");
+document.addEventListener('DOMContentLoaded', function() {
+    const stateSelect = document.getElementById('filter-state');
+    const districtSelect = document.getElementById('filter-district');
+    const clusterSelect = document.getElementById('filter-cluster');
+    const resetBtn = document.querySelector('.btn-reset');
+    const searchBtn = document.querySelector('.btn-search');
 
-    customSelectWraps.forEach(wrapper => {
-      const input = wrapper.querySelector(".custom-combobox");
-      const optionsList = wrapper.querySelector(".custom-options");
-      const options = optionsList.querySelectorAll(".custom-option");
-      const hiddenInput = wrapper.nextElementSibling;
-
-      // Filter dropdown options based on input value
-      function filterOptions() {
-        const val = input.value.toLowerCase();
-        let visibleCount = 0;
-        options.forEach(option => {
-          const text = option.textContent.toLowerCase();
-          if (text.includes(val)) {
-            option.style.display = "";
-            visibleCount++;
-          } else {
-            option.style.display = "none";
-          }
-        });
-        optionsList.style.display = visibleCount > 0 ? "block" : "none";
-        wrapper.setAttribute("aria-expanded", visibleCount > 0);
-      }
-
-      // Select an option
-      function selectOption(option) {
-        input.value = option.textContent;
-        hiddenInput.value = option.dataset.value;
-        options.forEach(o => o.setAttribute("aria-selected", "false"));
-        option.setAttribute("aria-selected", "true");
-        optionsList.style.display = "none";
-        wrapper.setAttribute("aria-expanded", "false");
-        input.focus();
-
-        // Save to sessionStorage
-        if (hiddenInput.id) {
-          sessionStorage.setItem(hiddenInput.id, hiddenInput.value);
-        }
-      }
-
-      // Show options when input focused
-      input.addEventListener("focus", () => {
-        filterOptions();
-      });
-
-      // Filter on input
-      input.addEventListener("input", () => {
-        filterOptions();
-      });
-
-      // Hide dropdown on blur, with timeout to allow click
-      input.addEventListener("blur", () => {
-        setTimeout(() => {
-          optionsList.style.display = "none";
-          wrapper.setAttribute("aria-expanded", "false");
-        }, 200);
-      });
-
-      // Click on option
-      options.forEach(option => {
-        option.addEventListener("mousedown", (e) => {
-          e.preventDefault(); // prevent blur
-          selectOption(option);
-        });
-      });
-
-      // Keyboard navigation
-      input.addEventListener("keydown", (e) => {
-        const visibleOptions = Array.from(options).filter(o => o.style.display !== "none");
-        let index = visibleOptions.findIndex(o => o.getAttribute("aria-selected") === "true");
-
-        switch(e.key) {
-          case "ArrowDown":
-            e.preventDefault();
-            if (index < visibleOptions.length - 1) index++;
-            else index = 0;
-            visibleOptions.forEach(o => o.setAttribute("aria-selected", "false"));
-            visibleOptions[index].setAttribute("aria-selected", "true");
-            input.setAttribute("aria-activedescendant", visibleOptions[index].id);
-            visibleOptions[index].scrollIntoView({block: "nearest"});
-            break;
-          case "ArrowUp":
-            e.preventDefault();
-            if (index > 0) index--;
-            else index = visibleOptions.length - 1;
-            visibleOptions.forEach(o => o.setAttribute("aria-selected", "false"));
-            visibleOptions[index].setAttribute("aria-selected", "true");
-            input.setAttribute("aria-activedescendant", visibleOptions[index].id);
-            visibleOptions[index].scrollIntoView({block: "nearest"});
-            break;
-          case "Enter":
-            e.preventDefault();
-            if (index >= 0) selectOption(visibleOptions[index]);
-            break;
-          case "Escape":
-            optionsList.style.display = "none";
-            wrapper.setAttribute("aria-expanded", "false");
-            break;
-        }
-      });
-
-      // Restore from sessionStorage on load
-      if (hiddenInput && hiddenInput.id) {
-        const val = sessionStorage.getItem(hiddenInput.id);
-        if (val !== null && val !== "") {
-          const matchOption = Array.from(options).find(o => o.dataset.value === val);
-          if (matchOption) {
-            input.value = matchOption.textContent;
-            hiddenInput.value = val;
-            options.forEach(o => o.setAttribute("aria-selected", "false"));
-            matchOption.setAttribute("aria-selected", "true");
-          }
-        }
-      }
-    });
-
-    // Save text inputs & hidden inputs on change/input
-    const filterIds = [
-      "filter-circle", "cluster", "filter-site-type", "filter-alarm-type",
-      "filter-site-name", "filter-global-no", "filter-site-id", "filter-enter-days",
-      "filter-imei-no", "filter-from", "filter-to"
-    ];
-
-    filterIds.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) {
-        el.addEventListener("change", () => {
-          sessionStorage.setItem(id, el.value);
-        });
-        el.addEventListener("input", () => {
-          sessionStorage.setItem(id, el.value);
-        });
-      }
-    });
-
-    // Restore text inputs & hidden inputs from sessionStorage on load
-    filterIds.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) {
-        const savedValue = sessionStorage.getItem(id);
-        if (savedValue !== null) {
-          el.value = savedValue;
-        }
-      }
-    });
-
-    // Reset button clears storage and resets inputs
-    const resetBtn = document.querySelector(".btn-reset");
-    if (resetBtn) {
-      resetBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        filterIds.forEach(id => sessionStorage.removeItem(id));
-        document.querySelectorAll(".custom-select-wrapper").forEach(wrapper => {
-          const input = wrapper.querySelector(".custom-combobox");
-          const options = wrapper.querySelectorAll(".custom-option");
-          const hiddenInput = wrapper.nextElementSibling;
-
-          options.forEach(o => o.setAttribute("aria-selected", "false"));
-          if (options.length > 0) {
-            input.value = options[0].textContent;
-            hiddenInput.value = options[0].dataset.value;
-            options[0].setAttribute("aria-selected", "true");
-          } else {
-            input.value = "";
-            if (hiddenInput) hiddenInput.value = "";
-          }
-        });
-        filterIds.forEach(id => {
-          const el = document.getElementById(id);
-          if (el && (el.tagName !== "INPUT" || el.type !== "hidden")) el.value = "";
-        });
-        console.log("Filters reset and sessionStorage cleared");
-      });
+    // Function to sort array of objects by name
+    function sortByName(arr) {
+        return arr.sort((a, b) => a.name.localeCompare(b.name));
     }
-  });
+
+    // State → District filtering
+    stateSelect.addEventListener('change', function() {
+        const stateId = this.value;
+        districtSelect.innerHTML = '<option value="">Loading...</option>';
+        clusterSelect.innerHTML = '<option value="">Select a district first</option>';
+
+        if (stateId) {
+            fetch(/get_districts_for_filter/${stateId}/)
+                .then(response => response.json())
+                .then(data => {
+                    districtSelect.innerHTML = '<option value="">All</option>';
+                    const sortedDistricts = sortByName(data.districts);
+                    sortedDistricts.forEach(district => {
+                        const option = document.createElement('option');
+                        option.value = district.id;
+                        option.textContent = district.name;
+                        districtSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching districts:', error);
+                    districtSelect.innerHTML = '<option value="">Error loading districts</option>';
+                });
+        } else {
+            districtSelect.innerHTML = '<option value="">Select a state first</option>';
+            clusterSelect.innerHTML = '<option value="">Select a district first</option>';
+        }
+    });
+
+    // District → Cluster filtering
+    districtSelect.addEventListener('change', function() {
+        const distId = this.value;
+        clusterSelect.innerHTML = '<option value="">Loading...</option>';
+
+        if (distId) {
+            fetch(/get_clusters_for_filter/${distId}/)
+                .then(response => response.json())
+                .then(data => {
+                    clusterSelect.innerHTML = '<option value="">All</option>';
+                    const sortedClusters = sortByName(data.clusters);
+                    sortedClusters.forEach(cluster => {
+                        const option = document.createElement('option');
+                        option.value = cluster.id;
+                        option.textContent = cluster.name;
+                        clusterSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching clusters:', error);
+                    clusterSelect.innerHTML = '<option value="">Error loading clusters</option>';
+                });
+        } else {
+            clusterSelect.innerHTML = '<option value="">Select a district first</option>';
+        }
+    });
+
+    // Reset button functionality
+    resetBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        // Reset all form elements
+        const allInputs = document.querySelectorAll('.filter-input, .filter-select');
+        allInputs.forEach(input => {
+            if (input.type === 'date' || input.type === 'text') {
+                input.value = '';
+            } else if (input.tagName === 'SELECT') {
+                input.selectedIndex = 0;
+            }
+        });
+
+        // Reset dependent dropdowns
+        districtSelect.innerHTML = '<option value="">Select a state first</option>';
+        clusterSelect.innerHTML = '<option value="">Select a district first</option>';
+
+        console.log('Filters reset');
+    });
+
+    // Search button functionality
+    searchBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Collect all filter values
+        const filters = {
+            state: stateSelect.value,
+            district: districtSelect.value,
+            cluster: clusterSelect.value,
+            site_type: document.getElementById('filter-site-type').value,
+            site_id: document.getElementById('filter-site-id').value,
+            imei: document.getElementById('filter-imei').value,
+            call_status: document.getElementById('filter-call-status').value,
+            date_from: document.getElementById('filter-date-from').value,
+            date_to: document.getElementById('filter-date-to').value
+        };
+
+        console.log('Search filters:', filters);
+        
+        // Here you would typically make an API call to fetch filtered data
+        // For example:
+        // fetchRoboticCallData(filters);
+    });
+
+    // Function to fetch robotic call data (placeholder)
+    function fetchRoboticCallData(filters) {
+        // Build query parameters
+        const params = new URLSearchParams();
+        Object.entries(filters).forEach(([key, value]) => {
+            if (value) params.append(key, value);
+        });
+
+        // Make API call
+        fetch(/robotic_call_status_api/?${params.toString()})
+            .then(response => response.json())
+            .then(data => {
+                console.log('Robotic call data:', data);
+                // Update your table/display with the filtered data
+            })
+            .catch(error => {
+                console.error('Error fetching robotic call data:', error);
+            });
+    }
+});
 </script>
