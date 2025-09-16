@@ -216,17 +216,6 @@
   </select>
 </div>
 
-    <!-- Site Type Filter -->
-    <div class="filter-group">
-      <label for="filter-site-type" class="filter-label">Site Type:</label>
-      <select id="filter-site-type" class="filter-select" aria-controls="roboticCallsTable">
-        <option value="">All</option>
-        <option value="Type A">Type A</option>
-        <option value="Type B">Type B</option>
-        <option value="Type C">Type C</option>
-      </select>
-    </div>
-
     <!-- Site ID Filter -->
     <div class="filter-group">
       <label for="filter-site-id" class="filter-label">Site ID:</label>
@@ -301,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
         clusterSelect.innerHTML = '<option value="">Select a district first</option>';
 
         if (stateId) {
-            fetch(/get_districts_for_filter/${stateId}/)
+            fetch(`/get_districts_for_filter/${stateId}/`)
                 .then(response => response.json())
                 .then(data => {
                     districtSelect.innerHTML = '<option value="">All</option>';
@@ -329,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
         clusterSelect.innerHTML = '<option value="">Loading...</option>';
 
         if (distId) {
-            fetch(/get_clusters_for_filter/${distId}/)
+            fetch(`/get_clusters_for_filter/${distId}/`)
                 .then(response => response.json())
                 .then(data => {
                     clusterSelect.innerHTML = '<option value="">All</option>';
@@ -404,7 +393,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Make API call
-        fetch(/robotic_call_status_api/?${params.toString()})
+        fetch(`/robotic_call_status_api/?${params.toString()}`)
             .then(response => response.json())
             .then(data => {
                 console.log('Robotic call data:', data);

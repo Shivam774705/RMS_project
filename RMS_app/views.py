@@ -8,6 +8,7 @@ from .decorators import custom_login_required
 from django.core.paginator import Paginator
 from django.db.models import Max
 from django.db.models import Q
+from . import views
 
 
 from rest_framework.views import APIView
@@ -57,7 +58,8 @@ class RmsAlarmCommonList(APIView):
    # return HttpResponse("this is homepage")
 @custom_login_required
 def index(request):
-    return render(request, 'index.html')
+    state_data = get_all_states('third_db')
+    return render(request, 'index.html', {'state_data': state_data})
    
 @custom_login_required
 def analytics(request):
@@ -70,7 +72,7 @@ def battery(request):
 @custom_login_required
 def useradmin(request):
     if request.method == "POST":
-        name = request.POST.get("name")
+        name = request.POST.get("name") 
         username = request.POST.get("username")
         password = request.POST.get("password")
         role = request.POST.get("role")
@@ -82,7 +84,7 @@ def useradmin(request):
             role=role
         )
         messages.success(request, f"User {name} added successfully!")
-        return redirect("useradmin")
+        return redirect("useradmin") 
 
     # Define roles (inside the function)
     roles = {
@@ -101,6 +103,14 @@ def useradmin(request):
     print("Role counts:", role_counts)
     # Get all users
     all_users = LoginTableForRms.objects.all()
+
+    context = {
+        "role_counts": role_counts,
+        "all_users": all_users
+    }
+    return render(request, "useradmin.html", context)
+
+
 
     context = {
         "role_counts": role_counts,
@@ -160,15 +170,22 @@ def get_all_states(using_db='third_db'):
 
 
 
-@custom_login_required   
+# ==========================
+# FILTER PAGE
+# ==========================
+def get_all_states(using_db='third_db'):
+    return TpmsStateMaster.objects.using(using_db).all().order_by('state_name')
+
+
 def filters(request):
     state_data = get_all_states('third_db')
-    print(state_data)
+    print("States in filters:", state_data)
     return render(request, 'filters.html', {'state_data': state_data})
 
-@custom_login_required
+
 def live_alarms(request):
     # Find the latest date
+    state_data_from_filters = get_all_states('third_db')    
     latest = RmsAlarmCommon.objects.using('third_db').aggregate(
         latest_date=Max('created_dt')
     )['latest_date']
@@ -178,7 +195,7 @@ def live_alarms(request):
         created_dt__date=latest.date()
     )
 
-    state_data = TpmsStateMaster.objects.using('third_db').all().order_by('state_name')
+    state_data = get_all_states('second_db')
 
     context = {
         'alarms': alarms,
@@ -241,8 +258,9 @@ def status(request):
     # Dropdowns ke liye unique zones aur clusters lein
     distinct_zones = AlEscalationMaster.objects.using('second_db').values('zone').distinct()
     distinct_clusters = AlEscalationMaster.objects.using('second_db').values('cluster').distinct()
-
+    state_data = get_all_states('second_db')
     context = {
+        'state_data': state_data,
         # IMPORTANT: 'results' ki jagah ab 'page_obj' bhejenge
         'page_obj': page_obj, 
         'zones': distinct_zones,
@@ -289,6 +307,3 @@ def get_clusters_for_filter(request, dist_id):
     except Exception as e:
         print("Error in get_clusters_report_total:", str(e))
         return JsonResponse({'error': str(e)}, status=500)
-    
-
-
