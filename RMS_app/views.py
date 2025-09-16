@@ -245,8 +245,9 @@ def status(request):
     # Dropdowns ke liye unique zones aur clusters lein
     distinct_zones = AlEscalationMaster.objects.using('second_db').values('zone').distinct()
     distinct_clusters = AlEscalationMaster.objects.using('second_db').values('cluster').distinct()
-
+    state_data = get_all_states('second_db')
     context = {
+        'state_data': state_data,
         # IMPORTANT: 'results' ki jagah ab 'page_obj' bhejenge
         'page_obj': page_obj, 
         'zones': distinct_zones,
